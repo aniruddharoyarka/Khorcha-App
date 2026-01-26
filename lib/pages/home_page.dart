@@ -116,7 +116,7 @@ Widget _buildBottomNav() {
         children: [
           const Icon(Icons.home_filled, color: Color(0xFF1A1D3D)),
           const Icon(Icons.account_balance_wallet_outlined, color: Colors.grey),
-          const SizedBox(width: 40), // Space for FAB
+          const SizedBox(width: 40),
           const Icon(Icons.bar_chart_outlined, color: Colors.grey),
           const Icon(Icons.person_outline, color: Colors.grey),
         ],
@@ -195,8 +195,8 @@ Widget _buildCurrentBalance() {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0x78F5FFFC), // Soft off-white / peach start
-            Color(0x7700987B), // Soft lavender / purple end
+            Color(0x78F5FFFC),
+            Color(0x7700987B),
           ],
         ),
       ),
