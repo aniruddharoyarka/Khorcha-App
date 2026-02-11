@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:khorcha/pages/home_page.dart';
 
 void main() {
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF03624C)),
           useMaterial3: true,
+          textTheme: GoogleFonts.poppinsTextTheme(),
         ),
         home: HomePage()
     );
