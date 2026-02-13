@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:khorcha/pages/recent_transactions_card.dart';
+import 'package:khorcha/pages/transaction_page.dart';
 import 'package:khorcha/pages/upcoming_payment_card.dart';
 
 import 'package:khorcha/models/transactions.dart';
@@ -11,6 +12,15 @@ class HomePage extends StatefulWidget {
 
   @override
   State<HomePage> createState() => _HomePageState();
+}
+
+void _navigateToTransactionPage(BuildContext context){
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => TransactionPage(),
+    ),
+  );
 }
 
 class _HomePageState extends State<HomePage> {
@@ -45,7 +55,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 10),
               _buildHeader(),
               SizedBox(height: 15),
-              _buildCurrentBalance(),
+              _buildCurrentBalance(context),
               SizedBox(height: 15),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -121,7 +131,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: _buildBottomNav(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => _navigateToTransactionPage(context),
         backgroundColor: const Color(0xFF03624C),
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -208,7 +218,7 @@ Widget _buildHeader() {
   );
 }
 
-Widget _buildCurrentBalance() {
+Widget _buildCurrentBalance(BuildContext context) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 25),
     child: Container(
@@ -247,8 +257,9 @@ Widget _buildCurrentBalance() {
                 ),
               ],
             ),
-            ElevatedButton(onPressed: () {
+            ElevatedButton(onPressed: (){
               print("Add Clicked");
+              _navigateToTransactionPage(context);
             },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -265,3 +276,5 @@ Widget _buildCurrentBalance() {
     ),
   );
 }
+
+
