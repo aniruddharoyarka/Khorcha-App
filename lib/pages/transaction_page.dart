@@ -8,288 +8,195 @@ class TransactionPage extends StatefulWidget {
 }
 
 class _TransactionPageState extends State<TransactionPage> {
-  final GlobalKey<FormState> formState = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  // Controllers to capture user input
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
   String? _selectedType;
   String? _selectedCategory;
   DateTime? _selectedDate;
 
-  void _showDatePicker(){
-    showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2050),
-    ).then((value){
-      if(value != null){
-        setState(() {
-          _selectedDate = value;
-        });
-      }
-    });
+  // Subscription Logic Variables
+  bool _isSubscription = false;
+  int _billingCycle = 1;
+
+  final List<String> _types = ['Income', 'Expense'];
+  final List<String> _incomeCategories = ['Salary', 'Freelance', 'Gift', 'Other'];
+  final List<String> _expenseCategories = ['Food', 'Grocery', 'Internet', 'Rent', 'Travel', 'Other'];
+
+  void _showDatePicker() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
   }
-  
-  String _formateDate(DateTime date){
-    return "${date.day}/${date.month}/${date.year}";
-  }
-
-  final List<String> _selectAType = ['Income', 'Expense'];
-
-  final List<String> _incomeCategories = ['Salary', 'Freelance', 'Business', 'Investment', 'Rental', 'Gift', 'Refund', 'Other'];
-
-  final List<String> _expenseCategories = ['Food', 'Grocery', 'Internet', 'Transport', 'Shopping', 'Entertainment', 'Rent', 'Utilities', 'Healthcare', 'Education', 'Travel', 'Other'];
 
   @override
-  Widget build(BuildContext context){
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF9FFFC),
+      backgroundColor: const Color(0xFFF9FFFC),
       appBar: AppBar(
-        title: Text(
-          'Add transaction',
-          style: TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.normal,
-          ),
+        foregroundColor: Colors.white,
+        title: const Text('Add Transaction',
+            style: TextStyle(
+                fontWeight: FontWeight.normal),
         ),
         centerTitle: true,
+        backgroundColor: Color(0xFF03624C),
+        elevation: 0,
       ),
       body: Form(
-        key: formState,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-              children: <Widget>[
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [ Text(
-                    'Type',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(width: 78),
-                  Container(
-                    height: 70,
-                    width: 244,
-                    margin: EdgeInsets.only(bottom: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                    color: Color(0xFFF0F5F3),
-                  ),
-                  child: Center(
-                    child: DropdownButtonFormField<String>(
-                      hint: Text('Select a type', style: TextStyle(color: Colors.black26, fontSize: 16),),
-                      items: _selectAType
-                          .map<DropdownMenuItem<String>>((String value){
-                        return DropdownMenuItem<String>(value: value, child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? value){
-                        setState((){
-                          _selectedType = value;
-                          if(_selectedType == 'Expense'){
-                            _selectedCategory = _expenseCategories.first;
-                          }
-                          else{
-                            _selectedCategory = _incomeCategories.first;
-                          }
-                        });
-                      },
-                      validator: (value){
-                        if(value == null || value.isEmpty){
-                          return 'Select a type';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      isExpanded: true,
-                      elevation: 0,
-                    ),
-                  )
-                  ),
-                ],
-              ),
-              SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [Text(
-                  'Date',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                SizedBox(width: 78),
-                Container(
-                  height: 70,
-                  width: 244,
-                  margin: EdgeInsets.only(bottom: 10),
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF0F5F3),
-                  ),
-                  child: MaterialButton(
-                    onPressed: _showDatePicker,
-                    padding: EdgeInsets.zero,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Text(
-                        _selectedDate == null ? "Select date" : _formateDate(_selectedDate!),
-                        style: TextStyle(color: _selectedDate == null ? Colors.black26 : Colors.black, fontSize: 16),),
-                        Icon(Icons.calendar_today, color: Color(0xFF03624C), size: 20,),
-                      ],
-                    ),
-                  )
-                )
-                ],
-              ),
+            children: [
+              const SizedBox(height: 20),
 
-              SizedBox(height: 15),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [Text(
-                    'Category',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(width: 30),
-                  Container(
-                      height: 70,
-                      width: 244,
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF0F5F3),
-                      ),
-                      child: Center(
-                        child: DropdownButtonFormField<String>(
-                          hint: Text('Select a category', style: TextStyle(color: Colors.black26, fontSize: 16),),
-                          items: (_selectedType == 'Income'? _incomeCategories : _expenseCategories)
-                              .map<DropdownMenuItem<String>>((String value){
-                                return DropdownMenuItem<String>(value: value, child: Text(value),);
-                              }).toList(),
-                          onChanged: (String?value) {
-                            setState(() {
-                              _selectedCategory = value;
-                            });
-                          },
-                          validator: (value){
-                            if(value == null || value.isEmpty){
-                              return 'Select a category';
-                            }
-                            return null;},
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          isExpanded: true,
-                          elevation: 0,
-                        ),
-                      ),
-                  ),
-                  ]
+              // 1. Title Input (Important for Subscription names like "Spotify")
+              _buildInputField(label: "Title", child: TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(hintText: "e.g. Spotify", border: InputBorder.none),
+                validator: (v) => v!.isEmpty ? "Enter a title" : null,
+              )),
+
+              // 2. Type Dropdown
+              _buildInputField(label: "Type", child: DropdownButtonFormField<String>(
+                value: _selectedType,
+                items: _types.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                onChanged: (val) => setState(() {
+                  _selectedType = val;
+                  _selectedCategory = null; // Reset category when type changes
+                  if (val == 'Income') _isSubscription = false; // Subscriptions are usually expenses
+                }),
+                decoration: const InputDecoration(border: InputBorder.none, hintText: "Select Type"),
+              )),
+
+              // 3. Date Picker
+              _buildInputField(label: "Date", child: InkWell(
+                onTap: _showDatePicker,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_selectedDate == null ? "Select Date" : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"),
+                    const Icon(Icons.calendar_today, size: 20, color: Color(0xFF03624C)),
+                  ],
                 ),
-              SizedBox(height: 15),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [ Text(
-                    'Amount',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                  ),
-                    SizedBox(width: 45),
-                    Container(
-                      height: 70,
-                      width: 244,
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF0F5F3),
-                      ),
-                      child: Row(
-                        children: [
-                          Text('৳ ',style: TextStyle(fontSize: 16)),
-                          Expanded(
-                            child: TextFormField(
-                              validator: (value){
-                                if(value == null || value.isEmpty){
-                                  return "Enter an amount";
-                                }
-                                return null;},
-                              decoration: InputDecoration(
-                                hint: Text('0.00',style: TextStyle(color: Colors.black26, fontSize: 16),),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(vertical:12),
-                              ),
-                              keyboardType: TextInputType.number,
-                              textAlignVertical: TextAlignVertical.center,
-                            ),
-                          ),
-                        ],
-                      ),
+              )),
+
+              // 4. Category Dropdown
+              _buildInputField(label: "Category", child: DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                items: (_selectedType == 'Income' ? _incomeCategories : _expenseCategories)
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                onChanged: (val) => setState(() => _selectedCategory = val),
+                decoration: const InputDecoration(border: InputBorder.none, hintText: "Select Category"),
+              )),
+
+              // 5. Amount Input
+              _buildInputField(label: "Amount", child: TextFormField(
+                controller: _amountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(prefixText: "৳ ", border: InputBorder.none),
+                validator: (v) => v!.isEmpty ? "Enter amount" : null,
+              )),
+
+              // 6. Subscription Toggle (Only for Expenses)
+              if (_selectedType == 'Expense') ...[
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Mark as Subscription", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Switch(
+                      value: _isSubscription,
+                      activeColor: const Color(0xFF03624C),
+                      onChanged: (val) => setState(() => _isSubscription = val),
                     ),
-                  ]
-              ),
-              SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [ Text(
-                  'Note',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ],
                 ),
-                  SizedBox(width: 78),
-                  Container(
-                      height: 70,
-                      width: 244,
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF0F5F3),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                hint: Text('Add a note...', style: TextStyle(color: Colors.black26, fontSize: 16),),
-                                contentPadding: EdgeInsets.symmetric(vertical:12),
-                                border: InputBorder.none,
-                              ),
-                              textAlignVertical: TextAlignVertical.center,
-                            ),
-                          ),
-                        ],
-                      )
-                  ),
-                ],
-              ),
-              Spacer(),
+              ],
+
+              // 7. Conditional Billing Cycle
+              if (_isSubscription && _selectedType == 'Expense')
+                _buildInputField(label: "Every", child: TextFormField(
+                  initialValue: '1',
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(suffixText: "Months", border: InputBorder.none),
+                  onChanged: (val) => _billingCycle = int.tryParse(val) ?? 1,
+                )),
+
+              const SizedBox(height: 40),
+
+              // Save Button
               SizedBox(
                 width: double.infinity,
+                height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if(formState.currentState!.validate()){
-                      print('Transaction details saved');
-                      Navigator.pop(context);
-                    }},
+                  onPressed: _handleSave,
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF03624C),
-                      foregroundColor: Color(0xFFF0F5F3),
-                      padding: EdgeInsets.symmetric(horizontal: 100),
-                      textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.normal,)
+                    backgroundColor: const Color(0xFF03624C),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Save'),
+                  child: const Text("Save Transaction", style: TextStyle(color: Colors.white, fontSize: 18)),
                 ),
               ),
-              SizedBox(height: 20),
-              ]
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
     );
   }
+
+  // Helper to keep the UI consistent and code shorter
+  Widget _buildInputField({required String label, required Widget child}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Row(
+        children: [
+          SizedBox(width: 80, child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              decoration: BoxDecoration(color: const Color(0xFFF0F5F3), borderRadius: BorderRadius.circular(12)),
+              child: child,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleSave() {
+    if (_formKey.currentState!.validate() && _selectedDate != null) {
+      // Logic to calculate next payment
+      DateTime? nextPaymentDate;
+      if (_isSubscription) {
+        nextPaymentDate = DateTime(_selectedDate!.year, _selectedDate!.month + _billingCycle, _selectedDate!.day);
+      }
+
+      print("Saving: ${_titleController.text}, Sub: $_isSubscription, Next: $nextPaymentDate");
+      Navigator.pop(context);
+    } else if (_selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select a date")));
+    }
+  }
 }
-
-

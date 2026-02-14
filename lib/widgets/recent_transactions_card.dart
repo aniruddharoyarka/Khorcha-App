@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:khorcha/models/transactions.dart';
 
 class RecentTransactionsCard extends StatelessWidget {
@@ -9,30 +8,39 @@ class RecentTransactionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Determine color based on the Enum type
+    final Color amountColor = transaction.type == TransactionType.income
+        ? const Color(0xFF03624C)
+        : Colors.red;
+
+    // Determine the sign (+ or -)
+    final String sign = transaction.type == TransactionType.income ? "+" : "-";
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         height: 80,
-        margin: EdgeInsets.only(bottom: 10),
+        margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-            color: Color(0xFFF0F5F3), // Subtle light green/grey
+            color: const Color(0xFFF0F5F3),
             borderRadius: BorderRadius.circular(15)
         ),
         child: Center(
           child: ListTile(
-            leading: Icon(transaction.icon, color: Color(0xFF03624C)),
+            // Use a default icon if you haven't added specific icons to the new model yet
+            leading: Icon(Icons.receipt_long, color: const Color(0xFF03624C)),
             title: Text(
               transaction.title,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700),
             ),
             trailing: Text(
-              transaction.amount,
+              "$sign৳${transaction.amount.toStringAsFixed(0)}",
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 16,
-                color: transaction.amount.contains('+') ? Color(0xFF03624C) : Colors.red,
+                color: amountColor, // Now uses the logic above
               ),
             ),
           ),

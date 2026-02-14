@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+
+class DashboardHeader extends StatelessWidget {
+  final String name;
+  final VoidCallback onProfilePressed;
+
+  const DashboardHeader({
+    super.key,
+    required this.name,
+    required this.onProfilePressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Welcome,", style: TextStyle(fontSize: 25)),
+              Text(
+                name,
+                style: TextStyle(fontSize: 25, height: 1.1, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          // Updated Profile Button
+          GestureDetector(
+            onTap: onProfilePressed,
+            child: CircleAvatar(
+              radius: 25,
+              backgroundColor: Color(0xFF03624C),
+              child: Icon(Icons.person, color: Colors.white, size: 30),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
