@@ -14,18 +14,21 @@ class _TransactionPageState extends State<TransactionPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _newCategoryController = TextEditingController();
 
   String? _selectedType;
   String? _selectedCategory;
-  DateTime? _selectedDate;
+  DateTime? _selectedDate = DateTime.now();
 
   // Subscription Logic Variables
   bool _isSubscription = false;
   int _billingCycle = 1;
 
+  bool _isAddingCategory = false;
+
   final List<String> _types = ['Income', 'Expense'];
-  final List<String> _incomeCategories = ['Salary', 'Freelance', 'Gift', 'Other'];
-  final List<String> _expenseCategories = ['Food', 'Grocery', 'Internet', 'Rent', 'Travel', 'Other'];
+  final List<String> _incomeCategories = ['Salary', 'Freelance', 'Gift',];
+  final List<String> _expenseCategories = ['Food', 'Grocery', 'Internet', 'Rent', 'Travel',];
 
   void _showDatePicker() {
     showDatePicker(
@@ -34,12 +37,22 @@ class _TransactionPageState extends State<TransactionPage> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     ).then((value) {
-      if(value != null) {
-        setState(() {
-          _selectedDate = value;
-        });
+      if (value != null) {
+        setState(() => _selectedDate = value);
       }
     });
+  }
+
+  void _saveNewCategory() {
+    String newCategory = _newCategoryController.text.trim();
+    if(newCategory.isNotEmpty) {
+      setState(() {
+        _selectedType == 'Income' ? _incomeCategories.add(newCategory) : _expenseCategories.add(newCategory);
+        _selectedCategory = newCategory;
+        _isAddingCategory = false;
+        _newCategoryController.clear();
+      });
+    }
   }
 
   @override
@@ -47,6 +60,7 @@ class _TransactionPageState extends State<TransactionPage> {
     _titleController.dispose();
     _amountController.dispose();
     _noteController.dispose();
+    _newCategoryController.dispose();
     super.dispose();
   }
 
@@ -56,9 +70,9 @@ class _TransactionPageState extends State<TransactionPage> {
       backgroundColor: const Color(0xFFF9FFFC),
       appBar: AppBar(
         foregroundColor: Colors.white,
-        title: const Text('Add Transaction',
-            style: TextStyle(
-                fontWeight: FontWeight.normal),
+        title: const Text(
+          'Add Transaction',
+          style: TextStyle(fontWeight: FontWeight.normal),
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF03624C),
@@ -73,56 +87,142 @@ class _TransactionPageState extends State<TransactionPage> {
               const SizedBox(height: 20),
 
               // 1. Title Input (Important for Subscription names like "Spotify")
-              _buildInputField(label: "Title", child: TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(hintText: "e.g. Spotify", border: InputBorder.none),
-                validator: (v) => v!.isEmpty ? "Enter a title" : null,
-              )),
+              _buildInputField(
+                label: "Title",
+                child: TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    hintText: "e.g. Spotify",
+                    border: InputBorder.none,
+                  ),
+                  validator: (v) => v!.isEmpty ? "Enter a title" : null,
+                ),
+              ),
 
               // 2. Type Dropdown
-              _buildInputField(label: "Type", child: DropdownButtonFormField<String>(
-                value: _selectedType,
-                items: _types.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-                onChanged: (val) => setState(() {
-                  _selectedType = val;
-                  _selectedCategory = null; // Reset category when type changes
-                  if (val == 'Income') _isSubscription = false; // Subscriptions are usually expenses
-                }),
-                decoration: const InputDecoration(border: InputBorder.none, hintText: "Select Type"),
-              )),
+              _buildInputField(
+                label: "Type",
+                child: DropdownButtonFormField<String>(
+                  value: _selectedType,
+                  items: _types
+                      .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                      .toList(),
+                  onChanged: (val) => setState(() {
+                    _selectedType = val;
+                    _selectedCategory = null; // Reset category when type changes
+                    if (val == 'Income')
+                      _isSubscription = false; // Subscriptions are usually expenses
+                  }),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Select Type",
+                  ),
+                ),
+              ),
 
               // 3. Date Picker
-              _buildInputField(label: "Date", child: GestureDetector(
-                onTap: _showDatePicker,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      child: Text(_selectedDate == null ? "Select Date" : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"),
-                    ),
-                    const Icon(Icons.calendar_today, size: 20, color: Color(0xFF03624C)),
-                  ],
+              _buildInputField(
+                label: "Date",
+                child: GestureDetector(
+                  onTap: _showDatePicker,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        child: Text(
+                           "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"
+                        ),
+                      ),
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 20,
+                        color: Color(0xFF03624C),
+                      ),
+                    ],
+                  ),
                 ),
-              )),
+              ),
 
               // 4. Category Dropdown
-              _buildInputField(label: "Category", child: DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                items: (_selectedType == 'Income' ? _incomeCategories : _expenseCategories)
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                onChanged: (val) => setState(() => _selectedCategory = val),
-                decoration: const InputDecoration(border: InputBorder.none, hintText: "Select Category"),
-                validator: (val) => val == null ? "Select a category" : null,
-              )),
+              _buildInputField(
+                label: "Category",
+                child: _isAddingCategory ? Row(children: [
+                  Expanded(child: TextField(
+                controller: _newCategoryController,
+                  decoration: const InputDecoration(
+                    hintText: "Enter category name",
+                    border: InputBorder.none,
+                  ),
+                  onSubmitted: (_) => _saveNewCategory(),
+                  )),
+                IconButton(
+                  icon: Icon(Icons.check, color: Color(0xFF03624C)),
+                    onPressed: _saveNewCategory,
+                  ),
+                  IconButton(
+                      icon: Icon(Icons.close, color: Color(0xFF03624C)),
+                      onPressed: () {
+                        setState((){
+                          _isAddingCategory = false;
+                          _newCategoryController.clear();
+                        });
+                      }),
+                ]) : DropdownButtonFormField<String>(
+                  value: _selectedCategory,
+                  items:[
+                    ...(_selectedType == 'Income'
+                        ? _incomeCategories
+                        : _expenseCategories)
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c),))
+                        .toList(),
+                    DropdownMenuItem<String>(
+                      value: '_add_',
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Add a new category'),
+                          const Icon(
+                            Icons.add,
+                            size: 20,
+                            color: Color(0xFF03624C),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (val) {
+                    if(val == '_add_') {
+                      setState((){
+                        _isAddingCategory = true;
+                      });
+                    } else {
+                      setState((){
+                        _selectedCategory = val;
+                      });
+                    }
+                  },
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Select Category",
+                  ),
+                  validator: (val) => val == null ? "Select a category" : null,
+                ),
+              ),
 
               // 5. Amount Input
-              _buildInputField(label: "Amount", child: TextFormField(
-                controller: _amountController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(prefixText: "৳ ", border: InputBorder.none),
-                validator: (v) => v!.isEmpty ? "Enter amount" : null,
-              )),
+              _buildInputField(
+                label: "Amount",
+                child: TextFormField(
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    prefixText: "৳ ",
+                    border: InputBorder.none,
+                  ),
+                  validator: (v) => v!.isEmpty ? "Enter amount" : null,
+                ),
+              ),
 
               // 6. Subscription Toggle (Only for Expenses)
               if (_selectedType == 'Expense') ...[
@@ -130,7 +230,13 @@ class _TransactionPageState extends State<TransactionPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Mark as Subscription", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Mark as Subscription",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Switch(
                       value: _isSubscription,
                       activeColor: const Color(0xFF03624C),
@@ -142,12 +248,18 @@ class _TransactionPageState extends State<TransactionPage> {
 
               // 7. Conditional Billing Cycle
               if (_isSubscription && _selectedType == 'Expense')
-                _buildInputField(label: "Every", child: TextFormField(
-                  initialValue: '1',
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(suffixText: "Months", border: InputBorder.none),
-                  onChanged: (val) => _billingCycle = int.tryParse(val) ?? 1,
-                )),
+                _buildInputField(
+                  label: "Every",
+                  child: TextFormField(
+                    initialValue: '1',
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      suffixText: "Months",
+                      border: InputBorder.none,
+                    ),
+                    onChanged: (val) => _billingCycle = int.tryParse(val) ?? 1,
+                  ),
+                ),
 
               const SizedBox(height: 40),
 
@@ -159,9 +271,14 @@ class _TransactionPageState extends State<TransactionPage> {
                   onPressed: _handleSave,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF03624C),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text("Save Transaction", style: TextStyle(color: Colors.white, fontSize: 18)),
+                  child: const Text(
+                    "Save Transaction",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -178,12 +295,21 @@ class _TransactionPageState extends State<TransactionPage> {
       padding: const EdgeInsets.only(bottom: 15),
       child: Row(
         children: [
-          SizedBox(width: 80, child: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              decoration: BoxDecoration(color: const Color(0xFFF0F5F3), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F5F3),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: child,
             ),
           ),
@@ -197,13 +323,22 @@ class _TransactionPageState extends State<TransactionPage> {
       // Logic to calculate next payment
       DateTime? nextPaymentDate;
       if (_isSubscription) {
-        nextPaymentDate = DateTime(_selectedDate!.year, _selectedDate!.month + _billingCycle, _selectedDate!.day);
+        nextPaymentDate = DateTime(
+          _selectedDate!.year,
+          _selectedDate!.month + _billingCycle,
+          _selectedDate!.day,
+        );
       }
 
-      print("Saving: ${_titleController.text}, Sub: $_isSubscription, Next: $nextPaymentDate");
+      print(
+        "Saving: ${_titleController.text}, Sub: $_isSubscription, Next: $nextPaymentDate",
+      );
       Navigator.pop(context);
     } else if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select a date")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please select a date")));
     }
   }
 }
+
