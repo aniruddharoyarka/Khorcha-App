@@ -31,9 +31,9 @@ class DashboardHeader extends StatelessWidget {
           GestureDetector(
             onTap: onProfilePressed,
             child: CircleAvatar(
-              radius: 25,
+              radius: 22,
               backgroundColor: Color(0xFF03624C),
-              child: Icon(Icons.person, color: Colors.white, size: 30),
+              child: Icon(Icons.person, color: Colors.white, size: 26),
             ),
           ),
         ],

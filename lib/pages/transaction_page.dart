@@ -89,12 +89,15 @@ class _TransactionPageState extends State<TransactionPage> {
               )),
 
               // 3. Date Picker
-              _buildInputField(label: "Date", child: InkWell(
+              _buildInputField(label: "Date", child: GestureDetector(
                 onTap: _showDatePicker,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_selectedDate == null ? "Select Date" : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      child: Text(_selectedDate == null ? "Select Date" : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"),
+                    ),
                     const Icon(Icons.calendar_today, size: 20, color: Color(0xFF03624C)),
                   ],
                 ),
@@ -107,6 +110,7 @@ class _TransactionPageState extends State<TransactionPage> {
                     .map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
                 onChanged: (val) => setState(() => _selectedCategory = val),
                 decoration: const InputDecoration(border: InputBorder.none, hintText: "Select Category"),
+                validator: (val) => val == null ? "Select a category" : null,
               )),
 
               // 5. Amount Input

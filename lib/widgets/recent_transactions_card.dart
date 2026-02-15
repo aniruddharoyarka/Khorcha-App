@@ -18,9 +18,9 @@ class RecentTransactionsCard extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: InkWell(
+      child: GestureDetector(
         onTap: () => _showTransactionDetails(context, transaction),
-        borderRadius: BorderRadius.circular(15),
+        //borderRadius: BorderRadius.circular(15),
         child: Container(
           height: 80,
           margin: const EdgeInsets.only(bottom: 10),
@@ -57,7 +57,7 @@ class RecentTransactionsCard extends StatelessWidget {
 void _showTransactionDetails(BuildContext context, TransactionModel tx) {
   showModalBottomSheet(
     context: context,
-    shape: const RoundedRectangleBorder(
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
     ),
     builder: (context) {
