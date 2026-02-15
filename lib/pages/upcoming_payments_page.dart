@@ -27,3 +27,4 @@ class UpcomingPaymentsPage extends StatelessWidget {
     );
   }
 }
+
