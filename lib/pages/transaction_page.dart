@@ -27,16 +27,19 @@ class _TransactionPageState extends State<TransactionPage> {
   final List<String> _incomeCategories = ['Salary', 'Freelance', 'Gift', 'Other'];
   final List<String> _expenseCategories = ['Food', 'Grocery', 'Internet', 'Rent', 'Travel', 'Other'];
 
-  void _showDatePicker() async {
-    final DateTime? picked = await showDatePicker(
+  void _showDatePicker() {
+    showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() => _selectedDate = picked);
-    }
+    ).then((value) {
+      if(value != null) {
+        setState(() {
+          _selectedDate = value;
+        });
+      }
+    });
   }
 
   @override
