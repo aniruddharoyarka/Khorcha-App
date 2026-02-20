@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:khorcha/widgets/line_graph.dart';
+//import 'package:khorcha/widgets/line_graph.dart';
 import 'package:khorcha/models/transactions.dart';
 
 class StatisticsPage extends StatefulWidget {
@@ -35,14 +35,14 @@ class _StatisticsPageState extends State<StatisticsPage>{
         context: context,
         backgroundColor: const Color(0xFFF9FFFC),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (context) {
           return SafeArea(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Container(
                     width:  40,
                     height: 4,
@@ -52,6 +52,21 @@ class _StatisticsPageState extends State<StatisticsPage>{
                     ),
                   ),
                   SizedBox(height: 20),
+                  ListTile(
+                    title: const Text(
+                      'Month',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _selectedPeriod = "Month";
+                      });
+                      Navigator.pop(context);
+                    },
+                    trailing: _selectedPeriod == "Month"
+                        ? const Icon(Icons.check, color: Color(0xFF03624C))
+                        : null,
+                  ),
                   ListTile(
                     title: const Text(
                       'Year',
@@ -84,7 +99,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
           title: Text("Statistics"),
           centerTitle: true,
         ),
-        body: Padding(
+        /*body: Padding(
             padding: const EdgeInsets.all(20),
           child: Card(
             elevation: 2,
@@ -100,7 +115,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
               ),
             ),
           ),
-        )
+        )*/
   );
   }
 }
