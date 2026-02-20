@@ -32,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
               width: double.infinity,
               height: 250,
               decoration: BoxDecoration(
-                color: Color(0xFFECECEC),
+                color: Color(0xFFF0F5F3),
                 borderRadius: BorderRadius.circular(20)
               ),
               child: Column(
@@ -81,30 +81,24 @@ class _ProfilePageState extends State<ProfilePage> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                  color: Color(0xFFECECEC),
+                  color: Color(0xFFF0F5F3),
                   borderRadius: BorderRadius.circular(20)
               ),
               child: Column(
                 children: [
-                  // 💰 Financial Settings
                   SettingsTile(
                     icon: Icons.flag,
                     title: "Monthly Budget",
                     onTap: () {},
                   ),
-
                   Divider(),
-
-                  // 🔔 Notifications
                   SettingsTile(
                     icon: Icons.notifications,
                     title: "Daily Reminder",
                     onTap: () {},
                   ),
-
                   Divider(),
-
-                  // 🎨 Preferencess
+                  /*
                   SettingsTile(
                     icon: Icons.dark_mode,
                     title: "Dark Mode",
@@ -114,10 +108,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       onChanged: (value) {},
                     ),
                   ),
-
                   Divider(),
-
-                  // ℹ️ About
+                   */
                   SettingsTile(
                     icon: Icons.info,
                     title: "About Khorcha",
