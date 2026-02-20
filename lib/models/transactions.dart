@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Using an enum makes your code less "buggy" than using plain Strings for types
 enum TransactionType { income, expense }
 
 class TransactionModel {
@@ -12,9 +11,9 @@ class TransactionModel {
   final TransactionType type;
   final String? note;
 
-  // --- Subscription Logic ---
+  //Subscription
   final bool isSubscription;
-  final int? billingCycle; // e.g., 1 for monthly, 12 for yearly
+  final int? billingCycle; //monthwise
   final DateTime? nextPaymentDate;
 
   TransactionModel({
@@ -29,13 +28,14 @@ class TransactionModel {
     this.billingCycle,
     this.nextPaymentDate,
   });
-
-  // Helper method to check if a transaction is an expense
+  /*
   bool get isExpense => type == TransactionType.expense;
 
-  // Helper to format the amount for the UI
+
   String get formattedAmount {
     String prefix = type == TransactionType.income ? "+" : "-";
     return "$prefix৳${amount.toStringAsFixed(2)}";
+
   }
+  */
 }
