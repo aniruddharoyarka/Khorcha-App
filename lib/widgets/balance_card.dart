@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 class BalanceCard extends StatelessWidget {
   final VoidCallback onAddPressed;
-  const BalanceCard({super.key, required this.onAddPressed});
+  final double totalExpense;
+  const BalanceCard({
+    super.key,
+    required this.onAddPressed,
+    required this.totalExpense,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +26,18 @@ class BalanceCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Total Expense", style: TextStyle(fontSize: 15)),
-                  Text("৳4,580.80", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700)),
+                  const Text("Total Expense", style: TextStyle(fontSize: 15)),
+                  Text(
+                    "৳${totalExpense.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
               ElevatedButton(

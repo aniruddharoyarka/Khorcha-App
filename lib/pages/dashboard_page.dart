@@ -29,9 +29,12 @@ class DashboardPage extends StatelessWidget {
       TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
       TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now(), category: "Work", type: TransactionType.income,),
       TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-
-
+      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,)
     ];
+
+    final double totalExpense = allTransactions
+        .where((tx) => tx.type == TransactionType.expense)
+        .fold(0.0, (sum, tx) => sum + tx.amount);
 
     // 1. Get ONLY subscriptions (where isSubscription is true)
     final List<TransactionModel> upcomingPayments = allTransactions
@@ -59,7 +62,10 @@ class DashboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 15),
 
-          BalanceCard(onAddPressed: onAddPressed),
+          BalanceCard(
+            onAddPressed: onAddPressed,
+            totalExpense: totalExpense,
+          ),
 
           const SizedBox(height: 15),
 
