@@ -17,7 +17,7 @@ class BalanceCard extends StatelessWidget {
         height: 120,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             colors: [Color(0x78F5FFFC), Color(0x7700987B)],
           ),
         ),
@@ -30,7 +30,7 @@ class BalanceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Total Expense", style: TextStyle(fontSize: 15)),
+                  Text("Total Expense", style: TextStyle(fontSize: 15)),
                   Text(
                     "৳${totalExpense.toStringAsFixed(2)}",
                     style: const TextStyle(
@@ -43,7 +43,7 @@ class BalanceCard extends StatelessWidget {
               ElevatedButton(
                 onPressed: onAddPressed,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.white, shape: const CircleBorder(), padding: const EdgeInsets.all(10)),
-                child: const Icon(Icons.add, size: 30, color: Color(0xFF03624C)),
+                child: Icon(Icons.add, size: 30, color: Color(0xFF03624C)),
               ),
             ],
           ),

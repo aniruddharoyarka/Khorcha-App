@@ -49,7 +49,7 @@ class DashboardPage extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics:  AlwaysScrollableScrollPhysics(),
         children: [
           SizedBox(height: 10),
           DashboardHeader(name: "Shakibul Alam",
@@ -60,14 +60,14 @@ class DashboardPage extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 15),
+           SizedBox(height: 15),
 
           BalanceCard(
             onAddPressed: onAddPressed,
             totalExpense: totalExpense,
           ),
 
-          const SizedBox(height: 15),
+           SizedBox(height: 15),
 
           SectionTitle(
             title: "Upcoming payments",
@@ -84,13 +84,13 @@ class DashboardPage extends StatelessWidget {
             },
           ),
 
-          const SizedBox(height: 10),
+           SizedBox(height: 10),
 
           SizedBox(
             height: 80,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding:  EdgeInsets.symmetric(horizontal: 20),
               itemCount: upcomingPayments.length,
               itemBuilder: (context, index) {
                 final payment = upcomingPayments[index];
@@ -119,7 +119,7 @@ class DashboardPage extends StatelessWidget {
 
           ListView.builder(
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+            physics:  NeverScrollableScrollPhysics(),
             itemCount: allTransactions.length,
             padding: EdgeInsets.zero,
             itemBuilder: (context, index) {

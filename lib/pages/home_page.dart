@@ -24,14 +24,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FFFC),
+      backgroundColor: Color(0xFFF9FFFC),
       body: IndexedStack(
         index: _currentIndex,
         children: [
           DashboardPage(
             onAddPressed: _navigateToTransactionPage,
           ),
-          const Center(child: Text("Statistics Page")),
+          Center(child: Text("Statistics Page")),
         ],
       ),
 
@@ -43,9 +43,9 @@ class _HomePageState extends State<HomePage> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF03624C),
+        selectedItemColor: Color(0xFF03624C),
         unselectedItemColor: Colors.grey,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_filled),
             label: "Home",
@@ -59,12 +59,12 @@ class _HomePageState extends State<HomePage> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToTransactionPage,
-        backgroundColor: const Color(0xFF03624C),
+        backgroundColor:  Color(0xFF03624C),
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.add, size: 30),
+        child: Icon(Icons.add, size: 30),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

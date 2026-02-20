@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/settings_tile.dart';
+import 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,8 +12,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
-
-  bool isDarkMode = false;
 
   Widget build(BuildContext context) {
 
@@ -25,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
           title: Text("Profile")
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding:  EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             Container(
@@ -61,7 +60,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   Text("User since $registeredSince"),
                   SizedBox(height: 5),
                   ElevatedButton(onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfilePage()),
+                    );
                   },
                       child: Text("Edit Profile"),
                       style: ElevatedButton.styleFrom(
@@ -89,27 +91,88 @@ class _ProfilePageState extends State<ProfilePage> {
                   SettingsTile(
                     icon: Icons.flag,
                     title: "Monthly Budget",
-                    onTap: () {},
+                    onTap: () {
+                      final TextEditingController budgetController =
+                      TextEditingController(text: "5000");
+
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape:  RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                        ),
+                        builder: (context) {
+                          return Padding(
+                            padding: EdgeInsets.all(25),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Container(
+                                    width: 40,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                                 SizedBox(height: 20),
+                                 Text("Monthly Budget", style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                                 SizedBox(height: 20),
+
+                                TextField(
+                                  controller: budgetController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: "Enter Budget Amount",
+                                    prefixText: "৳ ",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+
+                                 SizedBox(height: 25),
+
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:  Color(0xFF03624C),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child:  Text(
+                                      "Save Budget",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                   Divider(),
                   SettingsTile(
                     icon: Icons.notifications,
                     title: "Daily Reminder",
-                    onTap: () {},
+                    onTap: () {
+
+                    }
                   ),
                   Divider(),
-                  /*
-                  SettingsTile(
-                    icon: Icons.dark_mode,
-                    title: "Dark Mode",
-                    onTap: () {},
-                    trailing: Switch(
-                      value: isDarkMode,
-                      onChanged: (value) {},
-                    ),
-                  ),
-                  Divider(),
-                   */
                   SettingsTile(
                     icon: Icons.info,
                     title: "About Khorcha",
@@ -121,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           builder: (context) {
                             return Padding(
-                              padding: const EdgeInsets.all(25),
+                              padding: EdgeInsets.all(25),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min, // Sheet only takes needed space
                                 children: [
