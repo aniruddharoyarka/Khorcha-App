@@ -13,35 +13,20 @@ import 'all_transactions_page.dart';
 
 class DashboardPage extends StatelessWidget {
   final VoidCallback onAddPressed;
+  final List<TransactionModel> transactions;
 
-  const DashboardPage({super.key, required this.onAddPressed});
+  const DashboardPage({super.key, required this.onAddPressed, required this.transactions});
 
   @override
   Widget build(BuildContext context) {
-
-    // UPDATED: Sample data now matches the new TransactionModel requirements
-    final List<TransactionModel> allTransactions = [
-      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
-      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now().subtract(Duration(days: 20)), category: "Work", type: TransactionType.income,),
-      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 10)), category: "Food", type: TransactionType.expense,),
-      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now().subtract(Duration(days: 5)), category: "Work", type: TransactionType.income,),
-      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now().subtract(Duration(days: 20)), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
-      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now().subtract(Duration(days: 5)), category: "Work", type: TransactionType.income,),
-      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-
-
-    ];
-
     // 1. Get ONLY subscriptions (where isSubscription is true)
-    final List<TransactionModel> upcomingPayments = allTransactions
+    final List<TransactionModel> upcomingPayments = transactions
         .where((tx) => tx.isSubscription == true)
         .toList();
 
 // 2. Get ONLY standard transactions (not subscriptions) for the Recent list
 // Or keep it as all transactions if you want both to show up there
-    final List<TransactionModel> recentTransactions = allTransactions
+    final List<TransactionModel> recentTransactions = transactions
         .where((tx) => !tx.isSubscription)
         .toList();
 
@@ -60,7 +45,7 @@ class DashboardPage extends StatelessWidget {
             onStatisticsPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => StatisticsPage(transactions: allTransactions,))
+                MaterialPageRoute(builder: (context) => StatisticsPage(transactions: transactions,))
               );
             }
           ),
@@ -78,7 +63,7 @@ class DashboardPage extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => UpcomingPaymentsPage(
                     // We pass the master list so the new page can show them
-                    payments: allTransactions.where((t) => t.isSubscription).toList(),
+                    payments: transactions.where((t) => t.isSubscription).toList(),
                   ),
                 ),
               );
@@ -109,7 +94,7 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AllTransactionsPage(
-                    transactions: allTransactions, // Passing the full list
+                    transactions: transactions, // Passing the full list
                   ),
                 ),
               );
@@ -121,10 +106,10 @@ class DashboardPage extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: allTransactions.length,
+            itemCount: transactions.length,
             padding: EdgeInsets.zero,
             itemBuilder: (context, index) {
-              final tx = allTransactions[index];
+              final tx = transactions[index];
               return RecentTransactionsCard(transaction: tx);
             },
           ),
