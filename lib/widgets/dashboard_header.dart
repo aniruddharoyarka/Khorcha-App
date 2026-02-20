@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class DashboardHeader extends StatelessWidget {
   final String name;
   final VoidCallback onProfilePressed;
+  final VoidCallback onStatisticsPressed;
 
   const DashboardHeader({
     super.key,
     required this.name,
     required this.onProfilePressed,
+    required this.onStatisticsPressed
   });
 
   @override

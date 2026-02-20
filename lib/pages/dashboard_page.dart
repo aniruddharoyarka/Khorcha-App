@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:khorcha/pages/profile_page.dart';
+import 'package:khorcha/pages/statistics_page.dart';
 import 'package:khorcha/pages/upcoming_payments_page.dart';
 import 'package:khorcha/widgets/balance_card.dart';
 import 'package:khorcha/widgets/dashboard_header.dart';
@@ -20,15 +21,15 @@ class DashboardPage extends StatelessWidget {
 
     // UPDATED: Sample data now matches the new TransactionModel requirements
     final List<TransactionModel> allTransactions = [
-      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
-      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now(), category: "Work", type: TransactionType.income,),
-      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
-      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now(), category: "Work", type: TransactionType.income,),
-      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
-      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now(), category: "Work", type: TransactionType.income,),
-      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
+      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
+      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now().subtract(Duration(days: 20)), category: "Work", type: TransactionType.income,),
+      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
+      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 10)), category: "Food", type: TransactionType.expense,),
+      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now().subtract(Duration(days: 5)), category: "Work", type: TransactionType.income,),
+      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now().subtract(Duration(days: 20)), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
+      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
+      TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now().subtract(Duration(days: 5)), category: "Work", type: TransactionType.income,),
+      TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
 
 
     ];
@@ -56,6 +57,12 @@ class DashboardPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
+            onStatisticsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => StatisticsPage(transactions: allTransactions,))
+              );
+            }
           ),
           const SizedBox(height: 15),
 

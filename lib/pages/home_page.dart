@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khorcha/pages/dashboard_page.dart';
 import 'package:khorcha/pages/statistics_page.dart';
 import 'package:khorcha/pages/transaction_page.dart';
+import 'package:khorcha/widgets/line_graph.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,7 +33,6 @@ class _HomePageState extends State<HomePage> {
           DashboardPage(
             onAddPressed: _navigateToTransactionPage,
           ),
-          const StatisticsPage(),
         ],
       ),
 
