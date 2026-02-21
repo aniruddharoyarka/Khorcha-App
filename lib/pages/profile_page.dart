@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/settings_tile.dart';
 import 'edit_profile_page.dart';
+import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -239,9 +240,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   backgroundColor: Color(0xFF03624C),
                                 ),
                                 onPressed: () {
-                                  Navigator.pop(context);
-
-                                  // Add logout logic
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(builder: (context) => LoginPage()));
                                 },
                                 child: Text("Logout",
                                   style: TextStyle(
