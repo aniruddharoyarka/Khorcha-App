@@ -17,8 +17,6 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    // UPDATED: Sample data now matches the new TransactionModel requirements
     final List<TransactionModel> allTransactions = [
       TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
       TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now(), category: "Work", type: TransactionType.income,),
@@ -32,20 +30,14 @@ class DashboardPage extends StatelessWidget {
       TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,)
     ];
 
-    final double totalExpense = allTransactions
-        .where((tx) => tx.type == TransactionType.expense)
-        .fold(0.0, (sum, tx) => sum + tx.amount);
+    double totalExpense = 0.0;
+    for (var tx in allTransactions) {
+      if (tx.type == TransactionType.expense) {
+        totalExpense += tx.amount;
+      }
+    }
 
-    // 1. Get ONLY subscriptions (where isSubscription is true)
-    final List<TransactionModel> upcomingPayments = allTransactions
-        .where((tx) => tx.isSubscription == true)
-        .toList();
-
-// 2. Get ONLY standard transactions (not subscriptions) for the Recent list
-// Or keep it as all transactions if you want both to show up there
-    final List<TransactionModel> recentTransactions = allTransactions
-        .where((tx) => !tx.isSubscription)
-        .toList();
+    final List<TransactionModel> upcomingPayments = allTransactions.where((tx) => tx.isSubscription == true).toList();
 
     return SafeArea(
       child: ListView(
@@ -54,20 +46,18 @@ class DashboardPage extends StatelessWidget {
           SizedBox(height: 10),
           DashboardHeader(name: "Shakibul Alam",
             onProfilePressed: () {
-              Navigator.push(
-                context,
+              Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
           ),
-           SizedBox(height: 15),
+          SizedBox(height: 15),
 
           BalanceCard(
             onAddPressed: onAddPressed,
             totalExpense: totalExpense,
           ),
-
-           SizedBox(height: 15),
+          SizedBox(height: 15),
 
           SectionTitle(
             title: "Upcoming payments",
@@ -76,7 +66,6 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => UpcomingPaymentsPage(
-                    // We pass the master list so the new page can show them
                     payments: allTransactions.where((t) => t.isSubscription).toList(),
                   ),
                 ),
@@ -84,7 +73,7 @@ class DashboardPage extends StatelessWidget {
             },
           ),
 
-           SizedBox(height: 10),
+          SizedBox(height: 10),
 
           SizedBox(
             height: 80,
@@ -108,7 +97,7 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AllTransactionsPage(
-                    transactions: allTransactions, // Passing the full list
+                    transactions: allTransactions,
                   ),
                 ),
               );
