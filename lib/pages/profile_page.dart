@@ -24,243 +24,245 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
           title: Text("Profile")
       ),
-      body: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 250,
-              decoration: BoxDecoration(
-                color: Color(0xFFF0F5F3),
-                borderRadius: BorderRadius.circular(20)
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundColor: Color(0xFF03624C),
-                    child: Icon(Icons.person, color: Colors.white, size: 35),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Shakibul Alam",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold)
-                      ),
-                      SizedBox(width: 5),
-                      Icon(Icons.verified, color: Color(0xFF03624C)
-                      )
-                    ]
-                  ),
-                  SizedBox(height: 5),
-                  Text("User since $registeredSince"),
-                  SizedBox(height: 5),
-                  ElevatedButton(onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => EditProfilePage()),
-                    );
-                  },
-                      child: Text("Edit Profile"),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF03624C),
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)
-                          )
-                      )
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding:  EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 250,
+                decoration: BoxDecoration(
                   color: Color(0xFFF0F5F3),
                   borderRadius: BorderRadius.circular(20)
-              ),
-              child: Column(
-                children: [
-                  SettingsTile(
-                    icon: Icons.flag,
-                    title: "Monthly Budget",
-                    onTap: () {
-                      final TextEditingController budgetController =
-                      TextEditingController(text: "5000");
-
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        shape:  RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 35,
+                      backgroundColor: Color(0xFF03624C),
+                      child: Icon(Icons.person, color: Colors.white, size: 35),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Shakibul Alam",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold)
                         ),
-                        builder: (context) {
-                          return Padding(
-                            padding: EdgeInsets.all(25),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Center(
-                                  child: Container(
-                                    width: 40,
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                                 SizedBox(height: 20),
-                                 Text("Monthly Budget", style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                                ),
-                                 SizedBox(height: 20),
-
-                                TextField(
-                                  controller: budgetController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    labelText: "Enter Budget Amount",
-                                    prefixText: "৳ ",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-
-                                 SizedBox(height: 25),
-
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:  Color(0xFF03624C),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child:  Text(
-                                      "Save Budget",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                        SizedBox(width: 5),
+                        Icon(Icons.verified, color: Color(0xFF03624C)
+                        )
+                      ]
+                    ),
+                    SizedBox(height: 5),
+                    Text("User since $registeredSince"),
+                    SizedBox(height: 5),
+                    ElevatedButton(onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EditProfilePage()),
                       );
                     },
-                  ),
-                  Divider(),
-                  SettingsTile(
-                    icon: Icons.notifications,
-                    title: "Daily Reminder",
-                    onTap: () {
-
-                    }
-                  ),
-                  Divider(),
-                  SettingsTile(
-                    icon: Icons.info,
-                    title: "About Khorcha",
-                    onTap: () {
-                      showModalBottomSheet(
+                        child: Text("Edit Profile"),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF03624C),
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)
+                            )
+                        )
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                    color: Color(0xFFF0F5F3),
+                    borderRadius: BorderRadius.circular(20)
+                ),
+                child: Column(
+                  children: [
+                    SettingsTile(
+                      icon: Icons.flag,
+                      title: "Monthly Budget",
+                      onTap: () {
+                        final TextEditingController budgetController =
+                        TextEditingController(text: "5000");
+        
+                        showModalBottomSheet(
                           context: context,
-                          shape: RoundedRectangleBorder(
+                          isScrollControlled: true,
+                          shape:  RoundedRectangleBorder(
                             borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
                           ),
                           builder: (context) {
                             return Padding(
                               padding: EdgeInsets.all(25),
                               child: Column(
-                                mainAxisSize: MainAxisSize.min, // Sheet only takes needed space
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10))),
-                                  SizedBox(height: 20),
-                                  Text("About Khorcha", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                                  Text("Version 1.0.0", style: TextStyle(color: Colors.grey[600])),
-                                  Divider(height: 30),
-                                  Text("Khorcha is your personal finance companion that makes tracking expenses simple, budgeting smarter, and saving easier through intelligent insights and clean visual reports."),
-                                  SizedBox(height: 10),
-                                  Text("Developed by Ushriba Rahman & Aniruddha Roy Arka"),
-                                  SizedBox(height: 30),
-                                ]
+                                  Center(
+                                    child: Container(
+                                      width: 40,
+                                      height: 4,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                  ),
+                                   SizedBox(height: 20),
+                                   Text("Monthly Budget", style: TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                   SizedBox(height: 20),
+        
+                                  TextField(
+                                    controller: budgetController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      labelText: "Enter Budget Amount",
+                                      prefixText: "৳ ",
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
+        
+                                   SizedBox(height: 25),
+        
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:  Color(0xFF03624C),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child:  Text(
+                                        "Save Budget",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
-                          }
-                      );
-                    },
-                  ),
-
-                  Divider(),
-
-                  // 🚪 Logout
-                  SettingsTile(
-                    icon: Icons.logout,
-                    title: "Logout",
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
+                          },
+                        );
+                      },
+                    ),
+                    Divider(),
+                    SettingsTile(
+                      icon: Icons.notifications,
+                      title: "Daily Reminder",
+                      onTap: () {
+        
+                      }
+                    ),
+                    Divider(),
+                    SettingsTile(
+                      icon: Icons.info,
+                      title: "About Khorcha",
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
                             ),
-                            title: Row(
-                              children: [
-                                Icon(Icons.logout, color: Color(0xFF03624C)),
-                                SizedBox(width: 10),
-                                Text("Logout"),
-                              ],
-                            ),
-                            content: Text(
-                              "You will need to login again to access your account.",
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text("Cancel"),
-                              ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF03624C),
+                            builder: (context) {
+                              return Padding(
+                                padding: EdgeInsets.all(25),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min, // Sheet only takes needed space
+                                  children: [
+                                    Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10))),
+                                    SizedBox(height: 20),
+                                    Text("About Khorcha", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                                    Text("Version 1.0.0", style: TextStyle(color: Colors.grey[600])),
+                                    Divider(height: 30),
+                                    Text("Khorcha is your personal finance companion that makes tracking expenses simple, budgeting smarter, and saving easier through intelligent insights and clean visual reports."),
+                                    SizedBox(height: 10),
+                                    Text("Developed by Ushriba Rahman & Aniruddha Roy Arka"),
+                                    SizedBox(height: 30),
+                                  ]
                                 ),
-                                onPressed: () {
-                                  Navigator.pushReplacement(context,
-                                      MaterialPageRoute(builder: (context) => LoginPage()));
-                                },
-                                child: Text("Logout",
-                                  style: TextStyle(
-                                    color: Colors.white
+                              );
+                            }
+                        );
+                      },
+                    ),
+        
+                    Divider(),
+        
+                    // 🚪 Logout
+                    SettingsTile(
+                      icon: Icons.logout,
+                      title: "Logout",
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              title: Row(
+                                children: [
+                                  Icon(Icons.logout, color: Color(0xFF03624C)),
+                                  SizedBox(width: 10),
+                                  Text("Logout"),
+                                ],
+                              ),
+                              content: Text(
+                                "You will need to login again to access your account.",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text("Cancel"),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03624C),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(builder: (context) => LoginPage()));
+                                  },
+                                  child: Text("Logout",
+                                    style: TextStyle(
+                                      color: Colors.white
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    trailing: SizedBox(),
-                  ),
-
-                ],
-              ),
-            )
-          ],
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      trailing: SizedBox(),
+                    ),
+        
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       )
     );

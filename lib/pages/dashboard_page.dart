@@ -18,6 +18,7 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<TransactionModel> allTransactions = [
+      TransactionModel(id: '1', title: "Biriyani", amount: 230.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
       TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
       TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now(), category: "Work", type: TransactionType.income,),
       TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
@@ -27,7 +28,7 @@ class DashboardPage extends StatelessWidget {
       TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,),
       TransactionModel(id: '2', title: "Freelance", amount: 12000.0, date: DateTime.now(), category: "Work", type: TransactionType.income,),
       TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense,)
+      TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now(), category: "Food", type: TransactionType.expense)
     ];
 
     double totalExpense = 0.0;
