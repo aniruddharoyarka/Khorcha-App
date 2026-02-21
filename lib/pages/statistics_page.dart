@@ -30,6 +30,59 @@ class _StatisticsPageState extends State<StatisticsPage>{
     return widget.transactions.where((tx) => tx.date.isAfter(cutoffDate)).toList();
   }
 
+  void _showPeriodSelector(){
+    showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25))
+        ),
+        builder: (context) {
+          return Padding(
+              padding: const EdgeInsets.all(25),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 10),
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Select Period',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    ListTile(
+                      title: Text('Month', style: TextStyle(fontSize: 16),),
+                      onTap: (){
+                        setState(() {
+                          _selectedPeriod = "Month";
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Year', style: TextStyle(fontSize: 16),),
+                      onTap: (){
+                        setState(() {
+                          _selectedPeriod = "Year";
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                  ]
+              )
+          );
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,17 +98,19 @@ class _StatisticsPageState extends State<StatisticsPage>{
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Container(
-                    height: 280,
+                    height: 288,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const LinearGradient(
+                        colors: [Color(0x33F5FFFC), Color(0x3300987B),],
+                      ),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: LineGraph(
                           transactions: _filteredTransactions,
                           periodText: _selectedPeriod,
-                          onPeriodChanged: (String newPeriod){
-                            setState(() {
-                              _selectedPeriod = newPeriod;
-                            });
-                          }
+                          onPeriodTap: _showPeriodSelector,
                       ),
                     ),
                   ),

@@ -59,7 +59,7 @@ class LineGraph extends StatelessWidget {
 
     double max = maxIncome > maxExpense ? maxIncome : maxExpense;
     // Round up to nearest 1000 and add padding
-    return ((max + 1000) / 1000).ceil() * 1000.0;
+    return ((max + 2000) / 2000).ceil() * 2000.0;
   }
 
   List<FlSpot> _getIncomeSpots(){
@@ -109,29 +109,39 @@ class LineGraph extends StatelessWidget {
     }
   }
 
-  Map<int, String> _getUniqueXLabelsWithPositions() {
-    if (_uniqueTransactions.isEmpty) return {};
+  List<String> _getXAxisLabels() {
+    if (_uniqueTransactions.isEmpty) return [];
 
     var sorted = List<TransactionModel>.from(_uniqueTransactions)
       ..sort((a, b) => a.date.compareTo(b.date));
 
-    Map<int, String> uniqueLabelsWithPositions = {};
-    Set<String> seenLabels = {};
+    Set<String> uniqueDates = {};
+    List<String> uniqueList = [];
 
-    for (int i = 0; i < sorted.length; i++) {
-      String label = _formatDate(sorted[i].date);
-      if (!seenLabels.contains(label)) {
-        seenLabels.add(label);
-        uniqueLabelsWithPositions[i] = label; // Store at this index
+    for (var t in sorted) {
+      String label = _formatDate(t.date);
+      if (!uniqueDates.contains(label)) {
+        uniqueDates.add(label);
+        uniqueList.add(label);
       }
     }
 
-    return uniqueLabelsWithPositions;
+    if(uniqueList.length <= 4) return uniqueList;
+
+    List<String> result = [];
+    int step = (uniqueList.length / 4).floor();
+    for (int i = 0; i < 4; i++) {
+      int index = i * step;
+      if (index < uniqueList.length) {
+        result.add(uniqueList[index]);
+      }
+    }
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
-    Map<int, String> uniqueLabelsWithPositions = _getUniqueXLabelsWithPositions();
+    List<String> xAxisLabels = _getXAxisLabels();
     double maxY = _maxYValue;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,30 +166,30 @@ class LineGraph extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: onPeriodTap,
-                  child: Container(
+                child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                        color: Color(0xFF03624C),
-                        borderRadius: BorderRadius.circular(16)
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          periodText, style: TextStyle(fontSize: 12, color: Color(0xFFF9FFFC)),),
-                          Icon(Icons.arrow_drop_down, size: 18,color: Color(0xFFF9FFFC)),
-                      ],
-                    ),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF9FFFC),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-              ),
+                  child: Row(
+                    children: [Text(
+                      periodText, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                    ),
+                    Icon(Icons.arrow_drop_down, size: 18),
+                    ],
+                  ),
+                ),
+              )
             ],
           ),
         ),
         SizedBox(height: 22),
         //Chart
         SizedBox(
-          height: 180,
+          height: 155,
           child: Padding(
-            padding: EdgeInsets.only(right: 8, left: 8),
+            padding: EdgeInsets.only(right: 8, left: 8, bottom: 20),
             child: LineChart(
               LineChartData(
                 gridData:  FlGridData(
@@ -191,7 +201,7 @@ class LineGraph extends StatelessWidget {
                       return FlLine(
                         color: Colors.grey[300]!,
                         strokeWidth: 0.5,
-                          dashArray: [5, 5]
+                         dashArray: [2, 2]
                       );
                   },
                 ),
@@ -199,22 +209,20 @@ class LineGraph extends StatelessWidget {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 30,
+                      reservedSize: 18,
                       getTitlesWidget: (value, meta){
                         int index = value.toInt();
-                        if (uniqueLabelsWithPositions.containsKey(index)) {
-                          String label = uniqueLabelsWithPositions[index]!;
+                        if (index >= 0 && index < _uniqueTransactions.length) {
+                          String label = _formatDate(_uniqueTransactions[index].date);
+                          if(xAxisLabels.contains(label)){
                             return Padding(
-                              padding: EdgeInsets.only(
-                                  top: 8,
-                                left: 12,
-                                right: 12
-                              ),
+                              padding: EdgeInsets.only(top: 8,),
                               child: Text(
                                 label,
                                 style: TextStyle(fontSize: 10),
                               ),
                             );
+                          }
                         }
                         return Text('');
                       },
@@ -224,19 +232,18 @@ class LineGraph extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 35,
-                      interval: 1000,
+                      interval: 2000,
                       getTitlesWidget: (value, meta) {
                         // Format the Y-axis values
                         String text;
                         if (value == 0) {
                           text = '0';
-                        } else if (value >= 1000) {
-                          int kValue = (value / 1000).round();
-                          text = '$kValue K'; // Simple concatenation
-                        } else {
-                          text = '${value.toInt()}';
+                        } else if (value == 2000 || value == 4000 || value == 6000 || value == 8000) {
+                          text = '${(value/1000).toInt()}K';
                         }
-
+                        else {
+                          text = '${(value/1000).toInt()}K';
+                        }
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: Text(
@@ -256,7 +263,7 @@ class LineGraph extends StatelessWidget {
                 ),
                 borderData: FlBorderData(show: false,),
                 minY: 0,
-                maxY: maxY,
+                maxY: maxY ,
                 //Income Line
                 lineBarsData: [
                   LineChartBarData(
