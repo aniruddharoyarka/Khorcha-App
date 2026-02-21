@@ -19,77 +19,91 @@ class ExpensePieChart extends StatelessWidget {
     }
 
     final List<Color> pieColors = [
-      Colors.blue, Colors.orange, Colors.teal, Colors.pink, Colors.brown, Colors.cyan, Colors.purple, Colors.lime
+      const Color(0xFF64B5F6), // Soft Blue
+      const Color(0xFF81C784), // Soft Green
+      const Color(0xFFFFB74D), // Soft Orange
+      const Color(0xFFE57373), // Soft Red
+      const Color(0xFFBA68C8), // Soft Purple
+      const Color(0xFF4FC3F7), // Light Blue
+      const Color(0xFFAED581),
+      const Color(0xFFFF8A65),
     ];
-    return Container(
+    return Padding(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Color(0xFFF9FFFC),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Expenses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          
-          //PieChart
-          SizedBox(
-            height: 200,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 0,
-                centerSpaceRadius: 40,
-                sections: List.generate(categoryAmounts.length, (index){
-                  final category = categoryAmounts.keys.elementAt(index);
-                  final amount = categoryAmounts[category]!;
-                  return PieChartSectionData(
-                    value: amount,
-                    color: pieColors[index % pieColors.length],
-                    radius: 90,
-                  );
-                }
-              )
-            ),
-          )
-          ),
-          const SizedBox(height: 20),
-          //Category List
-          ...categoryAmounts.entries.map((entry){
-            final index = categoryAmounts.keys.toList().indexOf(entry.key);
-            final percentage = (entry.value / totalExpense) * 100;
-
-            return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: pieColors[index % pieColors.length],
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                      child: Text(
-                        entry.key, style: TextStyle(fontSize: 14),
-                      ),
-                  ),
-                  Text(
-                    '${percentage.toStringAsFixed(1)}%',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  )
-                ],
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0x33F5FFFC), Color(0x3300987B),],
               ),
-            );
-          }).toList(),
-        ],
-      ),
+              borderRadius: BorderRadius.circular(15)
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Expenses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+
+              //PieChart
+              SizedBox(
+                  height: 200,
+                  child: PieChart(
+                    PieChartData(
+                        sectionsSpace: 0,
+                        centerSpaceRadius: 60,
+                        sections: List.generate(categoryAmounts.length, (index){
+                          final category = categoryAmounts.keys.elementAt(index);
+                          final amount = categoryAmounts[category]!;
+                          return PieChartSectionData(
+                            value: amount,
+                            color: pieColors[index % pieColors.length],
+                            radius: 30,
+                            title: '',
+                          );
+                        }
+                        )
+                    ),
+                  )
+              ),
+              const SizedBox(height: 20),
+              //Category List
+              ...categoryAmounts.entries.map((entry){
+                final index = categoryAmounts.keys.toList().indexOf(entry.key);
+                final percentage = (entry.value / totalExpense) * 100;
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: pieColors[index % pieColors.length],
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          entry.key, style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+                      Text(
+                        '${percentage.toStringAsFixed(1)}%',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        )
     );
   }
 }

@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:khorcha/models/transactions.dart';
 
+class GraphDataSet {
+  final List<FlSpot> incomeSpots;
+  final List<FlSpot> expenseSpots;
+  final List<String> labels;
+  final double maxY;
+
+  GraphDataSet({
+    required this.incomeSpots,
+    required this.expenseSpots,
+    required this.labels,
+    required this.maxY,
+  });
+}
+
 class LineGraph extends StatelessWidget {
   final List<TransactionModel> transactions;
   final String periodText;
@@ -14,18 +28,26 @@ class LineGraph extends StatelessWidget {
     this.onPeriodTap,
   });
 
-  List<TransactionModel> get _uniqueTransactions {
-    Map<String, TransactionModel> uniqueMap = {};
-    for (var t in transactions) {
-      uniqueMap[t.id] = t; // This will keep only the last occurrence of each ID
+  // Get unique transactions by date (last transaction of each day)
+  List<TransactionModel> _getDailyUniqueTransactions(){
+    Map<String, TransactionModel> dailyMap = {};
+
+    var sorted = List<TransactionModel>.from(transactions)
+      ..sort((a,b) => a.date.compareTo(b.date));
+
+    for(var t in sorted){
+      String dataKey = "${t.date.year}-${t.date.month}-${t.date.day}";
+      dailyMap[dataKey] = t; //keeps the last transaction of each day
     }
-    return uniqueMap.values.toList();
+    var result = dailyMap.values.toList();
+    result.sort((a,b) => a.date.compareTo(b.date));
+    return result;
   }
 
   //Calculate total net worth
   double get totalNetWorth{
     double total = 0;
-    for(var t in _uniqueTransactions){
+    for(var t in transactions){
       if(t.type == TransactionType.income){
         total += t.amount;
       } else {
@@ -35,69 +57,50 @@ class LineGraph extends StatelessWidget {
     return total;
   }
 
-  // Calculate max Y value based on actual data
-  double get _maxYValue {
-    if (_uniqueTransactions.isEmpty) return 3000;
+  GraphDataSet _getGraphData() {
+    final dailyTransactions = _getDailyUniqueTransactions();
+    if (dailyTransactions.isEmpty) {
+      return GraphDataSet(
+        incomeSpots: [],
+        expenseSpots: [],
+        labels: [],
+        maxY: 5000,
+      );
+    }
+    List<FlSpot> incomeSpots = [];
+    List<FlSpot> expenseSpots = [];
+    List<String> xLabels = [];
 
-    double maxIncome = 0;
-    double maxExpense = 0;
     double runningIncome = 0;
     double runningExpense = 0;
+    double maxValue = 0;
 
-    var sorted = List<TransactionModel>.from(_uniqueTransactions)
-      ..sort((a, b) => a.date.compareTo(b.date));
+    for (int i = 0; i < dailyTransactions.length; i++) {
+      final t = dailyTransactions[i];
 
-    for (var t in sorted) {
-      if (t.type == TransactionType.income) {
+      if (t.type == TransactionType.income)
         runningIncome += t.amount;
-      } else {
+      else
         runningExpense += t.amount;
-      }
-      maxIncome = maxIncome < runningIncome ? runningIncome : maxIncome;
-      maxExpense = maxExpense < runningExpense ? runningExpense : maxExpense;
+
+      incomeSpots.add(FlSpot(i.toDouble(), runningIncome));
+      expenseSpots.add(FlSpot(i.toDouble(), runningExpense));
+
+      maxValue = maxValue < runningIncome ? runningIncome : maxValue;
+      maxValue = maxValue < runningExpense ? runningExpense : maxValue;
+
+      String label = _formatDate(t.date);
+      xLabels.add(label);
     }
+    double maxY = (maxValue * 1.2);
+    maxY = (maxY / 1000).ceil() * 1000.0;
 
-    double max = maxIncome > maxExpense ? maxIncome : maxExpense;
-    // Round up to nearest 1000 and add padding
-    return ((max + 2000) / 2000).ceil() * 2000.0;
-  }
-
-  List<FlSpot> _getIncomeSpots(){
-    if(_uniqueTransactions.isEmpty) return [];
-
-    var sorted = List<TransactionModel>.from(_uniqueTransactions)
-      ..sort((a,b) => a.date.compareTo(b.date));
-
-    List<FlSpot> spots = [];
-    double runningIncome = 0;
-
-    for(int i = 0; i < sorted.length; i++) {
-      var t = sorted[i];
-      if(t.type == TransactionType.income){
-        runningIncome += t.amount;
-      }
-      spots.add(FlSpot(i.toDouble(), runningIncome));
-    }
-    return spots;
-  }
-
-  List<FlSpot> _getExpenseSpots(){
-    if(_uniqueTransactions.isEmpty) return [];
-
-    var sorted = List<TransactionModel>.from(_uniqueTransactions)
-      ..sort((a,b) => a.date.compareTo(b.date));
-
-    List<FlSpot> spots = [];
-    double runningExpense = 0;
-
-    for(int i = 0; i < sorted.length; i++) {
-      var t = sorted[i];
-      if(t.type == TransactionType.expense){
-        runningExpense += t.amount;
-      }
-      spots.add(FlSpot(i.toDouble(), runningExpense));
-    }
-    return spots;
+    return GraphDataSet(
+      incomeSpots: incomeSpots,
+      expenseSpots: expenseSpots,
+      labels: xLabels,
+      maxY: maxY,
+    );
   }
 
   String _formatDate(DateTime date){
@@ -109,31 +112,16 @@ class LineGraph extends StatelessWidget {
     }
   }
 
-  List<String> _getXAxisLabels() {
-    if (_uniqueTransactions.isEmpty) return [];
-
-    var sorted = List<TransactionModel>.from(_uniqueTransactions)
-      ..sort((a, b) => a.date.compareTo(b.date));
-
-    Set<String> uniqueDates = {};
-    List<String> uniqueList = [];
-
-    for (var t in sorted) {
-      String label = _formatDate(t.date);
-      if (!uniqueDates.contains(label)) {
-        uniqueDates.add(label);
-        uniqueList.add(label);
-      }
-    }
-
-    if(uniqueList.length <= 4) return uniqueList;
+  List<String> _getReducedLabels(List<String> allLabels) {
+    if (allLabels.length <= 5) return allLabels;
 
     List<String> result = [];
-    int step = (uniqueList.length / 4).floor();
+    int step = (allLabels.length / 4).floor();
+
     for (int i = 0; i < 4; i++) {
       int index = i * step;
-      if (index < uniqueList.length) {
-        result.add(uniqueList[index]);
+      if (index < allLabels.length) {
+        result.add(allLabels[index]);
       }
     }
     return result;
@@ -141,8 +129,13 @@ class LineGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> xAxisLabels = _getXAxisLabels();
-    double maxY = _maxYValue;
+    final graphData = _getGraphData();
+    final incomeSpots = graphData.incomeSpots;
+    final expenseSpots = graphData.expenseSpots;
+    final allLabels = graphData.labels;
+    final maxY = graphData.maxY;
+    final xLabels = _getReducedLabels(allLabels);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -170,13 +163,14 @@ class LineGraph extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Color(0xFFF9FFFC),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [Text(
-                      periodText, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                      periodText, style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
                     ),
-                    Icon(Icons.arrow_drop_down, size: 18),
+                    Icon(Icons.arrow_drop_down, size: 16),
                     ],
                   ),
                 ),
@@ -196,7 +190,7 @@ class LineGraph extends StatelessWidget {
                     show: true,
                   drawHorizontalLine: true,
                   drawVerticalLine: false,
-                  horizontalInterval: 1000,
+                  horizontalInterval: maxY/4,
                   getDrawingHorizontalLine: (value){
                       return FlLine(
                         color: Colors.grey[300]!,
@@ -210,11 +204,12 @@ class LineGraph extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 18,
+                      interval: 1,
                       getTitlesWidget: (value, meta){
-                        int index = value.toInt();
-                        if (index >= 0 && index < _uniqueTransactions.length) {
-                          String label = _formatDate(_uniqueTransactions[index].date);
-                          if(xAxisLabels.contains(label)){
+                        int index = value.toInt() - 1;
+                        if (index >= 0 && index < allLabels.length) {
+                          String label = allLabels[index];
+                          if(xLabels.contains(label)){
                             return Padding(
                               padding: EdgeInsets.only(top: 8,),
                               child: Text(
@@ -232,18 +227,18 @@ class LineGraph extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 35,
-                      interval: 2000,
+                      interval: maxY/4,
                       getTitlesWidget: (value, meta) {
                         // Format the Y-axis values
                         String text;
                         if (value == 0) {
                           text = '0';
-                        } else if (value == 2000 || value == 4000 || value == 6000 || value == 8000) {
-                          text = '${(value/1000).toInt()}K';
+                        } else if (value >= 1000) {
+                          text = '${(value / 1000).toStringAsFixed(0)}K';
+                        } else {
+                          text = value.toStringAsFixed(0);
                         }
-                        else {
-                          text = '${(value/1000).toInt()}K';
-                        }
+
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: Text(
@@ -262,12 +257,15 @@ class LineGraph extends StatelessWidget {
                   rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false,),
+                minX: 0.5,
+                maxX: (allLabels.length-1).toDouble() - 0.5,
                 minY: 0,
                 maxY: maxY ,
+                clipData: const FlClipData.all(),
                 //Income Line
                 lineBarsData: [
                   LineChartBarData(
-                    spots: _getIncomeSpots(),
+                    spots: incomeSpots,
                     isCurved: true,
                     color: Color(0xFF03624C),
                     barWidth: 2.5,
@@ -275,7 +273,7 @@ class LineGraph extends StatelessWidget {
                   ),
                 //Expense Line
                   LineChartBarData(
-                    spots: _getExpenseSpots(),
+                    spots: expenseSpots,
                     isCurved: true,
                     color: Colors.red.shade900,
                     barWidth: 2.5,

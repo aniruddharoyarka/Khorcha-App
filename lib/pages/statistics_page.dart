@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khorcha/widgets/expense_pie_chart.dart';
 import 'package:khorcha/widgets/line_graph.dart';
 import 'package:khorcha/models/transactions.dart';
 import 'package:khorcha/widgets/monthly_summary_card.dart';
@@ -67,6 +68,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
                         Navigator.pop(context);
                       },
                     ),
+                    const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: Colors.black26),
                     ListTile(
                       title: Text('Year', style: TextStyle(fontSize: 16),),
                       onTap: (){
@@ -95,7 +97,9 @@ class _StatisticsPageState extends State<StatisticsPage>{
         body: SafeArea(
           child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 20),
               children: [
+                //Line Graph
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Container(
@@ -116,9 +120,14 @@ class _StatisticsPageState extends State<StatisticsPage>{
                     ),
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
+
                 MonthlySummaryCard(transactions: widget.transactions),
-                const SizedBox(height: 15),
+
+                const SizedBox(height: 10),
+
+                ExpensePieChart(transactions: widget.transactions),
+
               ]
           ),
         )

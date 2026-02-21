@@ -22,7 +22,7 @@ class MonthlySummaryCard extends StatelessWidget {
 
   Widget _buildCard({required String title, required double amount, required IconData icon, required Color color}) {
     return Container(
-      width: 200,
+      width: 180,
       margin: const EdgeInsets.only(right: 15),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
