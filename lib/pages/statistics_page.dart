@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:khorcha/widgets/line_graph.dart';
 import 'package:khorcha/models/transactions.dart';
+import 'package:khorcha/widgets/monthly_summary_card.dart';
 
 class StatisticsPage extends StatefulWidget {
   final List<TransactionModel> transactions;
@@ -115,6 +116,9 @@ class _StatisticsPageState extends State<StatisticsPage>{
                     ),
                   ),
                 ),
+                const SizedBox(height: 15),
+                MonthlySummaryCard(transactions: widget.transactions),
+                const SizedBox(height: 15),
               ]
           ),
         )
