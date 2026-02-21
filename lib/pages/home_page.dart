@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:khorcha/pages/dashboard_page.dart';
 import 'package:khorcha/pages/statistics_page.dart';
 import 'package:khorcha/pages/transaction_page.dart';
-//import 'package:khorcha/widgets/line_graph.dart';
+import 'package:khorcha/models/transactions.dart';
+import 'package:khorcha/widgets/line_graph.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +14,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+
+  // UPDATED: Sample data now matches the new TransactionModel requirements
+  final List<TransactionModel> allTransactions = [
+    TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
+    TransactionModel(id: '2', title: "Freelance", amount: 3000.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Work", type: TransactionType.income,),
+    TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
+    TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
+    TransactionModel(id: '2', title: "Freelance", amount: 3000.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Work", type: TransactionType.income,),
+    TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
+    TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
+    TransactionModel(id: '2', title: "Freelance", amount: 3000.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Work", type: TransactionType.income,),
+    TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
+  ];
 
   void _navigateToTransactionPage() {
     Navigator.push(
@@ -32,7 +46,9 @@ class _HomePageState extends State<HomePage> {
         children: [
           DashboardPage(
             onAddPressed: _navigateToTransactionPage,
+            transactions: allTransactions,
           ),
+          StatisticsPage(transactions: allTransactions),
         ],
       ),
 
@@ -53,7 +69,7 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart_outlined),
-            label: "Statictics",
+            label: "Statistics",
           ),
         ],
       ),
