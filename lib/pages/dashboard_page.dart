@@ -13,47 +13,46 @@ import 'all_transactions_page.dart';
 
 class DashboardPage extends StatelessWidget {
   final VoidCallback onAddPressed;
-  final List<TransactionModel> transactions;
+  final List<TransactionModel> allTransactions;
 
-  const DashboardPage({super.key, required this.onAddPressed, required this.transactions});
+  const DashboardPage({super.key, required this.onAddPressed, required this.allTransactions});
 
   @override
   Widget build(BuildContext context) {
-    // 1. Get ONLY subscriptions (where isSubscription is true)
-    final List<TransactionModel> upcomingPayments = transactions
-        .where((tx) => tx.isSubscription == true)
-        .toList();
+    final List<TransactionModel> upcomingPayments = allTransactions.where((tx) => tx.isSubscription == true).toList();
 
-// 2. Get ONLY standard transactions (not subscriptions) for the Recent list
-// Or keep it as all transactions if you want both to show up there
-    final List<TransactionModel> recentTransactions = transactions
-        .where((tx) => !tx.isSubscription)
-        .toList();
+    double totalExpense = 0.0;
+    for (var tx in allTransactions) {
+      if (tx.type == TransactionType.expense) {
+        totalExpense += tx.amount;
+      }
+    }
 
     return SafeArea(
       child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics:  AlwaysScrollableScrollPhysics(),
         children: [
           SizedBox(height: 10),
           DashboardHeader(name: "Shakibul Alam",
             onProfilePressed: () {
-              Navigator.push(
-                context,
+              Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
             onStatisticsPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => StatisticsPage(transactions: transactions,))
+                MaterialPageRoute(builder: (context) => StatisticsPage(transactions: allTransactions,))
               );
             }
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
 
-          BalanceCard(onAddPressed: onAddPressed),
-
-          const SizedBox(height: 15),
+          BalanceCard(
+            onAddPressed: onAddPressed,
+            totalExpense: totalExpense,
+          ),
+          SizedBox(height: 15),
 
           SectionTitle(
             title: "Upcoming payments",
@@ -63,20 +62,20 @@ class DashboardPage extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => UpcomingPaymentsPage(
                     // We pass the master list so the new page can show them
-                    payments: transactions.where((t) => t.isSubscription).toList(),
+                    payments: allTransactions.where((t) => t.isSubscription).toList(),
                   ),
                 ),
               );
             },
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           SizedBox(
             height: 80,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding:  EdgeInsets.symmetric(horizontal: 20),
               itemCount: upcomingPayments.length,
               itemBuilder: (context, index) {
                 final payment = upcomingPayments[index];
@@ -94,7 +93,7 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AllTransactionsPage(
-                    transactions: transactions, // Passing the full list
+                    transactions: allTransactions, // Passing the full list
                   ),
                 ),
               );
@@ -105,11 +104,11 @@ class DashboardPage extends StatelessWidget {
 
           ListView.builder(
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: transactions.length,
+            physics:  NeverScrollableScrollPhysics(),
+            itemCount: allTransactions.length,
             padding: EdgeInsets.zero,
             itemBuilder: (context, index) {
-              final tx = transactions[index];
+              final tx = allTransactions[index];
               return RecentTransactionsCard(transaction: tx);
             },
           ),

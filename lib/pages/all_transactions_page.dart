@@ -16,12 +16,11 @@ class AllTransactionsPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: transactions.isEmpty
-          ? const Center(child: Text("No transactions yet"))
+          ?  Center(child: Text("No transactions yet"))
           : ListView.builder(
-        padding: const EdgeInsets.only(top: 10, bottom: 20),
+        padding:  EdgeInsets.only(top: 10, bottom: 20),
         itemCount: transactions.length,
         itemBuilder: (context, index) {
-          // Sort by date here if you want newest first
           final sortedList = transactions..sort((a, b) => b.date.compareTo(a.date));
           return RecentTransactionsCard(transaction: sortedList[index]);
         },
