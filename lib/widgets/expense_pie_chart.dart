@@ -16,7 +16,8 @@ class ExpensePieChart extends StatelessWidget {
     final totalExpense = allExpenses.fold(0.0, (sum, t) => sum + t.amount);
     final Map<String, double> categoryAmounts = {};
 
-    for (var transaction in allExpenses) {
+    for (int i = 0; i < allExpenses.length; i++) {
+      var transaction = allExpenses[i];
       categoryAmounts[transaction.category] =
           (categoryAmounts[transaction.category] ?? 0) + transaction.amount;
     }
