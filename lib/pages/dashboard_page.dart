@@ -56,7 +56,6 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => UpcomingPaymentsPage(
-                    // We pass the master list so the new page can show them
                     payments: allTransactions.where((t) => t.isSubscription).toList(),
                   ),
                 ),
@@ -88,7 +87,7 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AllTransactionsPage(
-                    transactions: allTransactions, // Passing the full list
+                    transactions: allTransactions,
                   ),
                 ),
               );

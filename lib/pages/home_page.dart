@@ -25,8 +25,6 @@ class _HomePageState extends State<HomePage> {
     TransactionModel(id: '6', title: "Electricity Bill", amount: 350.0, date: DateTime.now().subtract(const Duration(days: 18)), category: "Utilities", type: TransactionType.expense,),
     TransactionModel(id: '7', title: "Internet", amount: 250.0, date: DateTime.now().subtract(const Duration(days: 16)), category: "Utilities", type: TransactionType.expense, isSubscription: true,),
     TransactionModel(id: '7', title: "Internet", amount: 500.0, date: DateTime.now().subtract(const Duration(days: 16)), category: "Utilities", type: TransactionType.expense, isSubscription: true,),
-    //TransactionModel(id: '2', title: "Freelance", amount: 3000.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Work", type: TransactionType.income,),
-    //TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
   ];
 
   void _navigateToTransactionPage() {

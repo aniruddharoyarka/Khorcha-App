@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
-import 'login_page.dart'; // Import this so we can navigate back
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -128,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     print("Name: ${_nameController.text}");
                     print("Email: ${_emailController.text}");
 
-                    // Simple check if passwords match
+                    //password check
                     if (_passwordController.text ==
                         _confirmPasswordController.text) {
                       Navigator.pushReplacement(

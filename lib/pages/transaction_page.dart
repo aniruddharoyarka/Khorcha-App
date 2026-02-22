@@ -10,7 +10,6 @@ class TransactionPage extends StatefulWidget {
 class _TransactionPageState extends State<TransactionPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Controllers to capture user input
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
@@ -20,7 +19,6 @@ class _TransactionPageState extends State<TransactionPage> {
   String? _selectedCategory;
   DateTime? _selectedDate = DateTime.now();
 
-  // Subscription Logic Variables
   bool _isSubscription = false;
   int _billingCycle = 1;
 
@@ -86,7 +84,6 @@ class _TransactionPageState extends State<TransactionPage> {
             children: [
               SizedBox(height: 20),
 
-              // 1. Title Input (Important for Subscription names like "Spotify")
               _buildInputField(
                 label: "Title",
                 child: TextFormField(
@@ -99,7 +96,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 2. Type Dropdown
+              // type dropdown
               _buildInputField(
                 label: "Type",
                 child: DropdownButtonFormField<String>(
@@ -109,8 +106,8 @@ class _TransactionPageState extends State<TransactionPage> {
                       .toList(),
                   onChanged: (val) => setState(() {
                     _selectedType = val;
-                    _selectedCategory = null; // Reset category when type changes
-                    if (val == 'Income') _isSubscription = false; // Subscriptions are usually expenses
+                    _selectedCategory = null; // resets category when type changes
+                    if (val == 'Income') _isSubscription = false; // subscriptions are expenses
                   }),
                   decoration: InputDecoration(
                     border: InputBorder.none,
@@ -119,7 +116,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 3. Date Picker
+              //  date picker
               _buildInputField(
                 label: "Date",
                 child: GestureDetector(
@@ -143,7 +140,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 4. Category Dropdown
+              // category dropdown
               _buildInputField(
                 label: "Category",
                 child: _isAddingCategory ? Row(children: [
@@ -209,7 +206,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 5. Amount Input
+              // amount Input
               _buildInputField(
                 label: "Amount",
                 child: TextFormField(
@@ -223,7 +220,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 6. Subscription Toggle (Only for Expenses)
+              //subscription toggle
               if (_selectedType == 'Expense') ...[
                 SizedBox(height: 10),
                 Row(
@@ -245,7 +242,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ],
 
-              // 7. Conditional Billing Cycle
+              // billing cycle
               if (_isSubscription && _selectedType == 'Expense')
                 _buildInputField(
                   label: "Every",
@@ -262,7 +259,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
               SizedBox(height: 40),
 
-              // Save Button
+              // save button
               SizedBox(
                 width: double.infinity,
                 height: 55,
@@ -288,7 +285,7 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  // Helper to keep the UI consistent and code shorter
+
   Widget _buildInputField({required String label, required Widget child}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 15),
@@ -319,7 +316,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   void _handleSave() {
     if (_formKey.currentState!.validate() && _selectedDate != null) {
-      // Logic to calculate next payment
+      // logic for next payment
       DateTime? nextPaymentDate;
       if (_isSubscription) {
         nextPaymentDate = DateTime(
