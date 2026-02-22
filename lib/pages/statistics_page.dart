@@ -91,7 +91,9 @@ class _StatisticsPageState extends State<StatisticsPage>{
     return Scaffold(
         backgroundColor: const Color(0xFFF9FFFC),
         appBar: AppBar(
-          title: Text("Statistics"),
+          title: Text("Statistics",
+            style: TextStyle(fontWeight: FontWeight.normal),
+          ),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -100,10 +102,9 @@ class _StatisticsPageState extends State<StatisticsPage>{
               padding: const EdgeInsets.only(bottom: 20),
               children: [
                 //Line Graph
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
+                  Container(
                     height: 288,
+                    margin: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       gradient: const LinearGradient(
@@ -119,7 +120,6 @@ class _StatisticsPageState extends State<StatisticsPage>{
                       ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 10),
 
                 MonthlySummaryCard(transactions: widget.transactions),

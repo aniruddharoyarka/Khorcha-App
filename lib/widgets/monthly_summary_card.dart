@@ -27,7 +27,9 @@ class MonthlySummaryCard extends StatelessWidget {
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color:  const Color(0xFF03624C),
+        gradient: const LinearGradient(
+          colors: [Color(0x33F5FFFC), Color(0x3300987B),],
+        ),
       ),
       child: Row(
         children: [
@@ -75,13 +77,13 @@ class MonthlySummaryCard extends StatelessWidget {
                 ? _buildCard(
                 title: 'Income',
                 amount: totals['income']!,
-                icon: Icons.arrow_upward,
+                icon: Icons.trending_up,
                 color: const Color(0xFF03624C)
                 )
                 : _buildCard(
                 title: 'Expense',
                 amount: totals['expense']!,
-                icon: Icons.arrow_downward,
+                icon: Icons.trending_down,
                 color: Colors.red.shade900
                 );
           }
