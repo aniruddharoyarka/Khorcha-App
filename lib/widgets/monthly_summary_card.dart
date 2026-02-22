@@ -53,7 +53,7 @@ class MonthlySummaryCard extends StatelessWidget {
                     style: TextStyle(fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Text('৳${amount.toStringAsFixed(2)}',
+                  Text('৳${amount.toStringAsFixed(0)}',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18,)
                   ),
                   const Text('Current month',

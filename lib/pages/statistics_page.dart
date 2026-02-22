@@ -126,7 +126,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(height: 10),
-                            Text("Total Net Worth", style: TextStyle(fontSize: 15, color: Color(0xFFF0F5F3))),
+                            Text("Total Net Balance", style: TextStyle(fontSize: 15, color: Color(0xFFF0F5F3))),
                             Text(
                               "৳${totalNetBalance.toStringAsFixed(2)}", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: Color(0xFFF0F5F3)),
                             ),
