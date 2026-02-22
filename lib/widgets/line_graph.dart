@@ -32,13 +32,13 @@ class LineGraph extends StatelessWidget {
   List<TransactionModel> _getDailyUniqueTransactions(){
     Map<String, TransactionModel> dailyMap = {};
 
-    var sorted = List<TransactionModel>.from(transactions)
-      ..sort((a,b) => a.date.compareTo(b.date));
+    List<TransactionModel> sorted = List.from(transactions);
+    sorted.sort((a, b) => a.date.compareTo(b.date));
 
     for (int i = 0; i < sorted.length; i++) {
       var t = sorted[i];
       String dataKey = "${t.date.year}-${t.date.month}-${t.date.day}";
-      dailyMap[dataKey] = t; //keeps the last transaction of each day
+      dailyMap[dataKey] = t;
     }
     var result = dailyMap.values.toList();
     result.sort((a,b) => a.date.compareTo(b.date));
@@ -66,10 +66,8 @@ class LineGraph extends StatelessWidget {
     for (int i = 0; i < dailyTransactions.length; i++) {
       final t = dailyTransactions[i];
 
-      if (t.type == TransactionType.income)
-        runningIncome += t.amount;
-      else
-        runningExpense += t.amount;
+      if (t.type == TransactionType.income) runningIncome += t.amount;
+      else runningExpense += t.amount;
 
       incomeSpots.add(FlSpot(i.toDouble(), runningIncome));
       expenseSpots.add(FlSpot(i.toDouble(), runningExpense));
@@ -129,23 +127,20 @@ class LineGraph extends StatelessWidget {
       children: [
         //Header with period selector
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    'Income vs Expense',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, ),
-                  )
+                  Text('Income vs Expense', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, ),)
                 ],
               ),
               GestureDetector(
                 onTap: onPeriodTap,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Color(0xFF03624C),
                     borderRadius: BorderRadius.circular(50),
@@ -153,10 +148,7 @@ class LineGraph extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        periodText,
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white),
-                      ),
+                      Text(periodText, style: TextStyle(fontSize: 12,color: Colors.white),),
                       Icon(Icons.arrow_drop_down, size: 16, color: Colors.white),
                     ],
                   ),
@@ -169,9 +161,9 @@ class LineGraph extends StatelessWidget {
 
         //Chart
         SizedBox(
-          height: 190,
+          height: 197,
           child: Padding(
-            padding: EdgeInsets.only(right: 8, left: 8, bottom: 20),
+            padding: EdgeInsets.only(right: 8, left: 8, bottom: 8),
             child: LineChart(
               LineChartData(
                 gridData:  FlGridData(
@@ -223,20 +215,20 @@ class LineGraph extends StatelessWidget {
                           text = value.toStringAsFixed(0);
                         }
                         return Padding(
-                          padding: const EdgeInsets.only(right: 8),
+                          padding: EdgeInsets.only(right: 8),
                           child: Text(text, style: TextStyle(fontSize: 10,), textAlign: TextAlign.right,),);
                       },
                     ),
                   ),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false,),
                 minX: 0.5,
                 maxX: (allLabels.length-1).toDouble() - 0.5,
                 minY: 0,
                 maxY: maxY ,
-                clipData: const FlClipData.all(),
+                clipData: FlClipData.all(),
 
                 //Income Line
                 lineBarsData: [
@@ -245,7 +237,7 @@ class LineGraph extends StatelessWidget {
                     isCurved: true,
                     color: Color(0xFF03624C),
                     barWidth: 2.5,
-                    dotData: const FlDotData(show: false),
+                    dotData: FlDotData(show: false),
                   ),
 
                 //Expense Line
@@ -254,7 +246,7 @@ class LineGraph extends StatelessWidget {
                     isCurved: true,
                     color: Colors.red,
                     barWidth: 2.5,
-                    dotData: const FlDotData(show: false),
+                    dotData: FlDotData(show: false),
                   ),
                 ],
               ),

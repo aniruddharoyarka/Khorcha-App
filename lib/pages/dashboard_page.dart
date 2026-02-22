@@ -39,12 +39,7 @@ class DashboardPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
-            onStatisticsPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => StatisticsPage(transactions: allTransactions,))
-              );
-            }
+            onStatisticsPressed: () {}
           ),
           SizedBox(height: 15),
 

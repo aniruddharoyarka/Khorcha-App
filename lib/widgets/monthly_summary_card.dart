@@ -12,19 +12,25 @@ class MonthlySummaryCard extends StatelessWidget {
       return t.date.month == now.month && t.date.year == now.year;
     }).toList();
 
-    double income = thisMonthTransactions.where((t) => t.type == TransactionType.income)
-      .fold(0, (sum,t) => sum + t.amount);
+    double income = 0;
+    double expense = 0;
 
-    double expense = thisMonthTransactions.where((t) => t.type == TransactionType.expense)
-      .fold(0,(sum,t) => sum + t.amount);
+    for (int i = 0; i < thisMonthTransactions.length; i++) {
+      var t = thisMonthTransactions[i];
+      if (t.type == TransactionType.income) {
+        income += t.amount;
+      } else {
+        expense += t.amount;
+      }
+    }
     return {'income' : income, 'expense' : expense};
   }
 
   Widget _buildCard({required String title, required double amount, required IconData icon, required Color color}) {
     return Container(
       width: 180,
-      margin: const EdgeInsets.only(right: 15),
-      padding: const EdgeInsets.all(15),
+      margin: EdgeInsets.only(right: 15),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Color(0xFFF0F5F3),
@@ -36,7 +42,7 @@ class MonthlySummaryCard extends StatelessWidget {
             backgroundColor:  Colors.white,
             child: Icon(icon, color: color,size: 25),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +50,7 @@ class MonthlySummaryCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text('৳${amount.toStringAsFixed(2)}',
@@ -68,7 +74,7 @@ class MonthlySummaryCard extends StatelessWidget {
       height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           itemCount: 2,
           itemBuilder: (context, index){
             return index == 0
@@ -76,7 +82,7 @@ class MonthlySummaryCard extends StatelessWidget {
                 title: 'Income',
                 amount: totals['income']!,
                 icon: Icons.trending_up,
-                color: const Color(0xFF03624C)
+                color: Color(0xFF03624C)
                 )
                 : _buildCard(
                 title: 'Expense',

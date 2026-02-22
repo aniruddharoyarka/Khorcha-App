@@ -21,13 +21,13 @@ class _StatisticsPageState extends State<StatisticsPage>{
 
     switch(_selectedPeriod){
       case "Month":
-        cutoffDate = now.subtract(const Duration(days: 30));
+        cutoffDate = now.subtract(Duration(days: 30));
         break;
       case "Year":
-        cutoffDate = now.subtract(const Duration(days: 365));
+        cutoffDate = now.subtract(Duration(days: 365));
         break;
       default:
-        cutoffDate = now.subtract(const Duration(days: 30));
+        cutoffDate = now.subtract(Duration(days: 30));
     }
     return widget.transactions.where((tx) => tx.date.isAfter(cutoffDate)).toList();
   }
@@ -48,16 +48,16 @@ class _StatisticsPageState extends State<StatisticsPage>{
   void _showPeriodSelector(){
     showModalBottomSheet(
         context: context,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(25))
         ),
         builder: (context) {
           return Padding(
-              padding: const EdgeInsets.all(25),
+              padding: EdgeInsets.all(25),
               child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Container(
                       width: 40,
                       height: 4,
@@ -66,12 +66,12 @@ class _StatisticsPageState extends State<StatisticsPage>{
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
+                    SizedBox(height: 20),
+                    Text(
                       'Select Period',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     ListTile(
                       title: Text('Month', style: TextStyle(fontSize: 16),),
                       onTap: (){
@@ -81,7 +81,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
                         Navigator.pop(context);
                       },
                     ),
-                    const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: Colors.black26),
+                    Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: Colors.black26),
                     ListTile(
                       title: Text('Year', style: TextStyle(fontSize: 16),),
                       onTap: (){
@@ -102,25 +102,23 @@ class _StatisticsPageState extends State<StatisticsPage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFFF9FFFC),
+        backgroundColor: Color(0xFFF9FFFC),
         appBar: AppBar(
-          title: Text("Statistics",
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
+          title: Text("Statistics",),
           centerTitle: true,
         ),
         body: SafeArea(
           child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 20),
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.only(bottom: 20),
               children: [
                 //Net Balance
                 Container(
                     height: 125,
-                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                  margin: EdgeInsets.only(top: 20, left: 20, right: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                      color: Color(0xFFF0F5F3),
+                      color: Color(0xFF03624C),
                   ),
                   child:Padding(
                       padding: EdgeInsets.all(20),
@@ -128,9 +126,9 @@ class _StatisticsPageState extends State<StatisticsPage>{
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(height: 10),
-                            Text("Total Net Worth", style: TextStyle(fontSize: 15)),
+                            Text("Total Net Worth", style: TextStyle(fontSize: 15, color: Color(0xFFF0F5F3))),
                             Text(
-                              "৳${totalNetBalance.toStringAsFixed(2)}", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
+                              "৳${totalNetBalance.toStringAsFixed(2)}", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: Color(0xFFF0F5F3)),
                             ),
                           ],
                       ),
@@ -143,16 +141,18 @@ class _StatisticsPageState extends State<StatisticsPage>{
 
                 ExpensePieChart(transactions: widget.transactions),
 
+                SizedBox(height: 2),
+
                 //Line Graph
                 Container(
                   height: 288,
-                  margin: const EdgeInsets.all(20),
+                  margin: EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: Color(0xFFF0F5F3),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: EdgeInsets.symmetric(vertical: 20),
                     child: LineGraph(
                       transactions: _filteredTransactions,
                       periodText: _selectedPeriod,
