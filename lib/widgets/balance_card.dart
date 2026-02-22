@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class BalanceCard extends StatelessWidget {
   final VoidCallback onAddPressed;
   final double totalExpense;
-  const BalanceCard({
-    super.key,
-    required this.onAddPressed,
-    required this.totalExpense,
+  const BalanceCard({super.key, required this.onAddPressed, required this.totalExpense,
   });
 
   @override

@@ -114,7 +114,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
               children: [
                 //Net Balance
                 Container(
-                    height: 125,
+                  height: 125,
                   margin: EdgeInsets.only(top: 20, left: 20, right: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),

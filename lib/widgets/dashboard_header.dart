@@ -22,7 +22,7 @@ class DashboardHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Welcome,", style: TextStyle(fontSize: 25)),
+              Text("Welcome", style: TextStyle(fontSize: 25)),
               Text(
                 name,
                 style: TextStyle(fontSize: 25, height: 1.1, fontWeight: FontWeight.bold),
