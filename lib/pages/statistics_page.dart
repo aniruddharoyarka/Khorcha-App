@@ -32,6 +32,19 @@ class _StatisticsPageState extends State<StatisticsPage>{
     return widget.transactions.where((tx) => tx.date.isAfter(cutoffDate)).toList();
   }
 
+  //Calculate total net balance
+  double get totalNetBalance{
+    double total = 0;
+    for(var t in widget.transactions){
+      if(t.type == TransactionType.income){
+        total += t.amount;
+      } else {
+        total -= t.amount;
+      }
+    }
+    return total;
+  }
+
   void _showPeriodSelector(){
     showModalBottomSheet(
         context: context,
@@ -92,7 +105,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
         backgroundColor: const Color(0xFFF9FFFC),
         appBar: AppBar(
           title: Text("Statistics",
-            style: TextStyle(fontWeight: FontWeight.normal),
+            style: TextStyle(fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
         ),
@@ -101,33 +114,52 @@ class _StatisticsPageState extends State<StatisticsPage>{
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 20),
               children: [
-                //Line Graph
-                  Container(
-                    height: 288,
-                    margin: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: const LinearGradient(
-                        colors: [Color(0x33F5FFFC), Color(0x3300987B),],
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: LineGraph(
-                          transactions: _filteredTransactions,
-                          periodText: _selectedPeriod,
-                          onPeriodTap: _showPeriodSelector,
-                      ),
-                    ),
+                //Net Balance
+                Container(
+                    height: 125,
+                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                      color: Color(0xFFF0F5F3),
                   ),
-                const SizedBox(height: 10),
+                  child:Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: 10),
+                            Text("Total Net Worth", style: TextStyle(fontSize: 15)),
+                            Text(
+                              "৳${totalNetBalance.toStringAsFixed(2)}", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                      ),
+                  ),
+                ),
+
+                SizedBox(height: 20),
 
                 MonthlySummaryCard(transactions: widget.transactions),
 
-                const SizedBox(height: 10),
-
                 ExpensePieChart(transactions: widget.transactions),
 
+                //Line Graph
+                Container(
+                  height: 288,
+                  margin: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Color(0xFFF0F5F3),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: LineGraph(
+                      transactions: _filteredTransactions,
+                      periodText: _selectedPeriod,
+                      onPeriodTap: _showPeriodSelector,
+                    ),
+                  ),
+                ),
               ]
           ),
         )

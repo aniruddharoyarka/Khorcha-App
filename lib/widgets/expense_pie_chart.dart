@@ -23,12 +23,12 @@ class ExpensePieChart extends StatelessWidget {
     }
 
     final List<Color> pieColors = [
-      const Color(0xFF64B5F6), // Soft Blue
-      const Color(0xFF81C784), // Soft Green
-      const Color(0xFFFFB74D), // Soft Orange
-      const Color(0xFFE57373), // Soft Red
-      const Color(0xFFBA68C8), // Soft Purple
-      const Color(0xFF4FC3F7), // Light Blue
+      const Color(0xFF64B5F6),
+      const Color(0xFF81C784),
+      const Color(0xFFFFB74D),
+      const Color(0xFFE57373),
+      const Color(0xFFBA68C8),
+      const Color(0xFF4FC3F7),
       const Color(0xFFAED581),
       const Color(0xFFFF8A65),
     ];
@@ -36,11 +36,8 @@ class ExpensePieChart extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Container(
         padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0x33F5FFFC), Color(0x3300987B),],
-            ),
+            color: Color(0xFFF0F5F3),
             borderRadius: BorderRadius.circular(15)
         ),
         child: Column(
@@ -53,9 +50,9 @@ class ExpensePieChart extends StatelessWidget {
               ),
               Text(
                 'Category wise',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
+                style: TextStyle(fontSize: 9, fontWeight: FontWeight.w300),
               ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
 
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,8 +64,8 @@ class ExpensePieChart extends StatelessWidget {
                     height: 180,
                     child: PieChart(
                       PieChartData(
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 50,
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 30,
                         sections: List.generate(
                             categoryAmounts.length, (index) {
                           final category = categoryAmounts.keys.elementAt(
@@ -77,7 +74,7 @@ class ExpensePieChart extends StatelessWidget {
                           return PieChartSectionData(
                             value: amount,
                             color: pieColors[index % pieColors.length],
-                            radius: 25,
+                            radius: 40,
                             title: '',
                           );
                         }),
@@ -85,7 +82,7 @@ class ExpensePieChart extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 30),
+                const SizedBox(width: 20),
 
                 //Category List
                 Expanded(
@@ -103,23 +100,23 @@ class ExpensePieChart extends StatelessWidget {
                         child: Row(
                           children: [
                             Container(
-                              width: 10,
-                              height: 10,
+                              width: 8,
+                              height: 8,
                               decoration: BoxDecoration(
                                 color: pieColors[index % pieColors.length],
-                                shape: BoxShape.circle,
+                                shape: BoxShape.rectangle,
                               ),
                             ),
                             const SizedBox(width: 5),
                             Expanded(
                               child: Text(
-                                entry.key, style: TextStyle(fontSize: 14),
+                                entry.key, style: TextStyle(fontSize: 10),
                               ),
                             ),
                             Text(
                               '${percentage.toStringAsFixed(1)}%',
                               style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                                  fontSize: 10, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),

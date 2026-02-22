@@ -27,9 +27,7 @@ class MonthlySummaryCard extends StatelessWidget {
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          colors: [Color(0x33F5FFFC), Color(0x3300987B),],
-        ),
+        color: Color(0xFFF0F5F3),
       ),
       child: Row(
         children: [
@@ -46,14 +44,14 @@ class MonthlySummaryCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text('৳${amount.toStringAsFixed(2)}',
-                    style: TextStyle(color : Colors.white, fontWeight: FontWeight.bold, fontSize: 18,)
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18,)
                   ),
                   const Text('Current month',
-                    style: TextStyle(fontSize: 10, color: Colors.white70),
+                    style: TextStyle(fontSize: 9),
                   ),
                 ],
               )
