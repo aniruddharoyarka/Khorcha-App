@@ -72,7 +72,7 @@ class DashboardPage extends StatelessWidget {
           SizedBox(height: 10),
 
           SizedBox(
-            height: 80,
+            height: 83,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding:  EdgeInsets.symmetric(horizontal: 20),

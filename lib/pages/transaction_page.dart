@@ -296,7 +296,7 @@ class _TransactionPageState extends State<TransactionPage> {
       child: Row(
         children: [
           SizedBox(
-            width: 80,
+            width: 85,
             child: Text(
               label,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
