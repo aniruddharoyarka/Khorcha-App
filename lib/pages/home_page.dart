@@ -15,7 +15,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
-  // UPDATED: Sample data now matches the new TransactionModel requirements
   final List<TransactionModel> allTransactions = [
     TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
     TransactionModel(id: '2', title: "Freelance", amount: 3000.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Work", type: TransactionType.income,),
