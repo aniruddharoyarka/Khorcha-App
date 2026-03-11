@@ -297,8 +297,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             return Padding(
                               padding: EdgeInsets.all(25),
                               child: Column(
-                                mainAxisSize: MainAxisSize
-                                    .min, // Sheet only takes needed space
+                                mainAxisSize: MainAxisSize.min, // Sheet only takes needed space
                                 children: [
                                   Container(
                                     width: 40,

@@ -88,7 +88,7 @@ class MonthlySummaryCard extends StatelessWidget {
                 title: 'Expense',
                 amount: totals['expense']!,
                 icon: Icons.trending_down,
-                color: Colors.red.shade900
+                color: Colors.red
                 );
           }
       ),
