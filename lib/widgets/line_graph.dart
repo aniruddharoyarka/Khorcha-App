@@ -28,7 +28,6 @@ class LineGraph extends StatelessWidget {
     this.onPeriodTap,
   });
 
-  // Get unique transactions by date (last transaction of each day)
   List<TransactionModel> _getDailyUniqueTransactions(){
     Map<String, TransactionModel> dailyMap = {};
 

@@ -123,7 +123,6 @@ class _StatisticsPageState extends State<StatisticsPage>{
                   child:Padding(
                       padding: EdgeInsets.all(20),
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(height: 10),
                             Text("Total Net Balance", style: TextStyle(fontSize: 15, color: Color(0xFFF0F5F3))),
