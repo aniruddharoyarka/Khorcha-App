@@ -297,8 +297,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             return Padding(
                               padding: EdgeInsets.all(25),
                               child: Column(
-                                mainAxisSize: MainAxisSize
-                                    .min, // Sheet only takes needed space
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
                                     width: 40,
@@ -329,6 +328,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     "Developed by Ushriba Rahman & Aniruddha Roy Arka",
                                   ),
                                   SizedBox(height: 30),
+                                  TextField()
                                 ],
                               ),
                             );

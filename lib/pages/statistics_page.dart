@@ -141,7 +141,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
                 ExpensePieChart(transactions: widget.transactions),
 
                 SizedBox(height: 2),
-
+/*
                 //Line Graph
                 Container(
                   height: 288,
@@ -150,6 +150,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
                     borderRadius: BorderRadius.circular(20),
                     color: Color(0xFFF0F5F3),
                   ),
+
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: LineGraph(
@@ -159,6 +160,8 @@ class _StatisticsPageState extends State<StatisticsPage>{
                     ),
                   ),
                 ),
+
+ */
               ]
           ),
         )
