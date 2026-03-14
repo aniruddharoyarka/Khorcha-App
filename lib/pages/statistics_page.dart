@@ -87,22 +87,27 @@ class _StatisticsPageState extends State<StatisticsPage>{
                 ExpensePieChart(transactions: widget.transactions),
 
                 SizedBox(height: 2),
-
+/*
                 //Line Graph
-                /*Container(
+                Container(
                   height: 288,
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: Color(0xFFF0F5F3),
                   ),
+
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: LineGraph(
-
+                      transactions: _filteredTransactions,
+                      periodText: _selectedPeriod,
+                      onPeriodTap: _showPeriodSelector,
                     ),
                   ),
-                ),*/
+                ),
+
+ */
               ]
           ),
         )

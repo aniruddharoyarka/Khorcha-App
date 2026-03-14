@@ -29,7 +29,6 @@ class DashboardHeader extends StatelessWidget {
               ),
             ],
           ),
-          // Updated Profile Button
           GestureDetector(
             onTap: onProfilePressed,
             child: CircleAvatar(
