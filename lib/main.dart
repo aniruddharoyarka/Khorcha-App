@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:khorcha/pages/home_page.dart';
 import 'package:khorcha/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:khorcha/pages/login_status_page.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           textTheme: GoogleFonts.poppinsTextTheme(),
         ),
-        home: LoginPage()
+        home: LoginStatusPage()
     );
   }
 }

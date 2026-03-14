@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -8,6 +9,8 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+
+  final user = FirebaseAuth.instance.currentUser;
 
   final TextEditingController fullNameController =
   TextEditingController(text: "Shakibul Alam");
