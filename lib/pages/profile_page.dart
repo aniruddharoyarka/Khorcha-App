@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/settings_tile.dart';
@@ -369,13 +370,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03624C),
                                   ),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LoginPage(),
-                                      ),
-                                    );
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    await FirebaseAuth.instance.signOut();
+                                    if (context.mounted) {
+                                      Navigator.pop(context);
+                                    }
                                   },
                                   child: Text(
                                     "Logout",

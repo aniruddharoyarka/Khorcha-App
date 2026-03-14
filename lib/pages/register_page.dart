@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'login_page.dart';
@@ -15,6 +16,34 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  Future signUp() async {
+    if (passwordConfirmed()) {
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        Navigator.pop(context);
+
+      } on FirebaseAuthException catch (e) {
+        print(e.message);
+      }
+    }
+  }
+
+  bool passwordConfirmed() {
+    if (_passwordController.text.trim() == _confirmPasswordController.text.trim()) {
+      return true;
+    }
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Passwords do not match")),
+      );
+      return false;
+    }
+  }
 
   @override
   void dispose() {
@@ -50,6 +79,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
               SizedBox(height: 25),
 
+              /*
+
               //name
               TextField(
                 controller: _nameController,
@@ -65,7 +96,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
 
-              SizedBox(height: 15),
+               */
+
+              //SizedBox(height: 15),
 
               //email
               TextField(
@@ -127,17 +160,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   onPressed: () {
                     print("Name: ${_nameController.text}");
                     print("Email: ${_emailController.text}");
-
-                    //password check
-                    if (_passwordController.text ==
-                        _confirmPasswordController.text) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    } else {
-                      print("Passwords do not match");
-                    }
+                    signUp();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03624C),

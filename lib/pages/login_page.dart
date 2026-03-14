@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:khorcha/pages/register_page.dart';
 
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
-   const LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -13,6 +14,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  Future signIn() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    Navigator.of(context).pop();
+  }
 
   @override
   void dispose() {
@@ -40,9 +57,11 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 5),
-              Text("To sign in to an account in the application, enter your email and password",
+              Text(
+                "To sign in to an account in the application, enter your email and password",
                 style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,),
+                textAlign: TextAlign.center,
+              ),
 
               SizedBox(height: 25),
 
@@ -83,35 +102,31 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: () {
                   print("Forget Password Clicked");
                 },
-                child: Text("Forget Password?",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF03624C),
-                  ),
+                child: Text(
+                  "Forget Password?",
+                  style: TextStyle(fontSize: 14, color: Color(0xFF03624C)),
                 ),
               ),
 
               SizedBox(height: 15),
 
-              SizedBox(
+              Container(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     print("Email: ${_emailController.text}");
                     print("Password: ${_passwordController.text}");
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
+                    await signIn();
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03624C),
-                    padding:  EdgeInsets.symmetric(vertical: 15),
+                    padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child:  Text(
+                  child: Text(
                     "Login",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
@@ -126,19 +141,19 @@ class _LoginPageState extends State<LoginPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => RegisterPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    padding:  EdgeInsets.symmetric(vertical: 15),
+                    padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child:  Text(
+                  child: Text(
                     "Create an Account",
                     style: TextStyle(color: Color(0xFF03624C), fontSize: 16),
                   ),
