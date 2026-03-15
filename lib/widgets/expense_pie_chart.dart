@@ -12,12 +12,11 @@ class ExpensePieChart extends StatelessWidget {
     final allExpenses = transactions.where((t) => t.type == TransactionType.expense).toList();
 
     double totalExpense = 0;
-    for (int i = 0; i < allExpenses.length; i++) {
-      totalExpense = totalExpense + allExpenses[i].amount;
+    for (var expense in allExpenses) {
+      totalExpense += expense.amount;
     }
 
-    final Map<String, double> categoryAmounts = {};
-
+    Map<String, double> categoryAmounts = {};
     for (int i = 0; i < allExpenses.length; i++) {
       String category = allExpenses[i].category;
       double amount = allExpenses[i].amount;
@@ -33,6 +32,7 @@ class ExpensePieChart extends StatelessWidget {
        Color(0xFF64B5F6), Color(0xFF81C784), Color(0xFFFFB74D), Color(0xFFE57373),
        Color(0xFFBA68C8), Color(0xFF4FC3F7), Color(0xFFAED581), Color(0xFFFF8A65),
     ];
+
     return Padding(
       padding: EdgeInsets.all(20),
       child: Container(

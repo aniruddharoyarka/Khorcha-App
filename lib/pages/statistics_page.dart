@@ -13,27 +13,8 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage>{
-  String _selectedPeriod = "Month";
-
-  List<TransactionModel> get _filteredTransactions {
-    DateTime now = DateTime.now();
-    DateTime cutoffDate;
-
-    switch(_selectedPeriod){
-      case "Month":
-        cutoffDate = now.subtract(Duration(days: 30));
-        break;
-      case "Year":
-        cutoffDate = now.subtract(Duration(days: 365));
-        break;
-      default:
-        cutoffDate = now.subtract(Duration(days: 30));
-    }
-    return widget.transactions.where((tx) => tx.date.isAfter(cutoffDate)).toList();
-  }
-
   //Calculate total net balance
-  double get totalNetBalance{
+  /*double get totalNetBalance{
     double total = 0;
     for(var t in widget.transactions){
       if(t.type == TransactionType.income){
@@ -43,7 +24,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
       }
     }
     return total;
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -58,56 +39,9 @@ class _StatisticsPageState extends State<StatisticsPage>{
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.only(bottom: 20),
               children: [
-                //Net Balance
-                Container(
-                  height: 125,
-                  margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                      color: Color(0xFF03624C),
-                  ),
-                  child:Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                          children: [
-                            SizedBox(height: 10),
-                            Text("Total Net Balance", style: TextStyle(fontSize: 15, color: Color(0xFFF0F5F3))),
-                            Text(
-                              "৳${totalNetBalance.toStringAsFixed(2)}", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: Color(0xFFF0F5F3)),
-                            ),
-                          ],
-                      ),
-                  ),
-                ),
-
-                SizedBox(height: 20),
-
                 MonthlySummaryCard(transactions: widget.transactions),
 
                 ExpensePieChart(transactions: widget.transactions),
-
-                SizedBox(height: 2),
-/*
-                //Line Graph
-                Container(
-                  height: 288,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Color(0xFFF0F5F3),
-                  ),
-
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: LineGraph(
-                      transactions: _filteredTransactions,
-                      periodText: _selectedPeriod,
-                      onPeriodTap: _showPeriodSelector,
-                    ),
-                  ),
-                ),
-
- */
               ]
           ),
         )
