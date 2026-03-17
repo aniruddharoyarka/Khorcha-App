@@ -17,30 +17,51 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  bool _isLoading = false;
+
   Future signUp() async {
-    if (passwordConfirmed()) {
-      try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+    if (!passwordConfirmed()) return;
 
-        Navigator.pop(context);
+    print("Email: ${_emailController.text.trim()}");
+    print("Password: ${_passwordController.text.trim()}");
 
-      } on FirebaseAuthException catch (e) {
-        print(e.message);
-      }
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context);
+      return;
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Registration failed")),
+      );
     }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   bool passwordConfirmed() {
-    if (_passwordController.text.trim() == _confirmPasswordController.text.trim()) {
+    if (_passwordController.text.trim() ==
+        _confirmPasswordController.text.trim()) {
       return true;
-    }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Passwords do not match")),
-      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Passwords do not match")));
       return false;
     }
   }
@@ -157,11 +178,12 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    print("Name: ${_nameController.text}");
-                    print("Email: ${_emailController.text}");
+                  onPressed: _isLoading
+                      ? null
+                      : () {
                     signUp();
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03624C),
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -169,7 +191,16 @@ class _RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: _isLoading
+                      ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : Text(
                     "Register",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),

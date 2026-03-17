@@ -15,25 +15,19 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool _isLoading = false;
+
   Future signIn() async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-
-      Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
-      Navigator.of(context).pop();
-
       String message = "Login failed";
       if (e.code == 'user-not-found') {
         message = "No user found for this email";
@@ -41,11 +35,19 @@ class _LoginPageState extends State<LoginPage> {
         message = "Incorrect password";
       }
 
+      if (!mounted) return;
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(content: Text(message)),
       );
     }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -130,9 +132,9 @@ class _LoginPageState extends State<LoginPage> {
               Container(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    print("Email: ${_emailController.text}");
-                    print("Password: ${_passwordController.text}");
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
                     await signIn();
                   },
 
@@ -143,12 +145,22 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: _isLoading
+                      ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : Text(
                     "Login",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
               ),
+
 
               SizedBox(height: 15),
               Divider(),

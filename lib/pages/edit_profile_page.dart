@@ -16,7 +16,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController(text: "Shakibul Alam");
 
   final TextEditingController displayNameController = TextEditingController(text: "Shakib");
-  final TextEditingController emailController = TextEditingController(text: "shakib@gmail.com");
+  late TextEditingController emailController;
   final TextEditingController currentPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
@@ -25,6 +25,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool obscureCurrent = true;
   bool obscureNew = true;
   bool obscureConfirm = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    emailController = TextEditingController(
+      text: user?.email ?? "No Email",
+    );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

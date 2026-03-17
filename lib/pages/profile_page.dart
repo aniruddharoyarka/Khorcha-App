@@ -14,6 +14,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
+
+  final user = FirebaseAuth.instance.currentUser;
+
   Widget build(BuildContext context) {
     DateTime registrationDate = DateTime.now();
 
@@ -58,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                     SizedBox(height: 5),
-                    Text("User since $registeredSince"),
+                    Text(user?.email ?? "No Email"),
                     SizedBox(height: 5),
                     ElevatedButton(
                       onPressed: () {
