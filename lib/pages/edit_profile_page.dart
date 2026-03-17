@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool obscureCurrent = true;
   bool obscureNew = true;
   bool obscureConfirm = true;
+
+  bool _isLoading = false;
+
+  Future updateDisplayName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final newName = displayNameController.text;
+    if (newName.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Name cannot be empty")));
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({'name': newName}, SetOptions(merge: true));
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Name updated successfully")));
+
+      Navigator.pop(context);
+
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Failed to update name")));
+      print("Firestore update error: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   void initState() {
@@ -123,19 +159,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed:updateDisplayName,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF03624C),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text(
-                  "Save Changes",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text("Save Changes", style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ),
             SizedBox(height: 30),
@@ -191,3 +224,4 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 }
+

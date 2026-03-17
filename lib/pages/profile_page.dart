@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -97,77 +98,118 @@ class _ProfilePageState extends State<ProfilePage> {
                     SettingsTile(
                       icon: Icons.flag,
                       title: "Monthly Budget",
-                      onTap: () {
-                        final TextEditingController budgetController =
-                            TextEditingController(text: "5000");
+                        onTap: () async {
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user == null) return;
 
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Dialog(
-                              insetPadding: EdgeInsets.symmetric(
-                                horizontal: 25,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: SingleChildScrollView(
-                                padding: EdgeInsets.all(25),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Monthly Budget",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 20),
+                          final docRef = FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user.uid);
 
-                                    TextField(
-                                      controller: budgetController,
-                                      keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
-                                        labelText: "Enter Budget Amount",
-                                        prefixText: "৳ ",
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
+                          int currentBudget = 0;
+
+                          // 🔹 Fetch existing budget
+                          try {
+                            final doc = await docRef.get();
+                            if (doc.exists && doc.data() != null) {
+                              currentBudget = doc['budget'] ?? 0;
+                            }
+                          } catch (e) {
+                            print("Error fetching budget: $e");
+                          }
+
+                          final TextEditingController budgetController =
+                          TextEditingController(text: currentBudget.toString());
+
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                insetPadding: EdgeInsets.symmetric(horizontal: 25),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: SingleChildScrollView(
+                                  padding: EdgeInsets.all(25),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Monthly Budget",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ),
+                                      SizedBox(height: 20),
 
-                                    SizedBox(height: 25),
-
-                                    SizedBox(
-                                      width: double.infinity,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(0xFF03624C),
-                                          shape: RoundedRectangleBorder(
+                                      TextField(
+                                        controller: budgetController,
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          labelText: "Enter Budget Amount",
+                                          prefixText: "৳ ",
+                                          border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                         ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text(
-                                          "Save Budget",
-                                          style: TextStyle(color: Colors.white),
+                                      ),
+
+                                      SizedBox(height: 25),
+
+                                      SizedBox(
+                                        width: double.infinity,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03624C),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            final newBudget =
+                                            int.tryParse(budgetController.text.trim());
+
+                                            if (newBudget == null) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text("Enter a valid number")),
+                                              );
+                                              return;
+                                            }
+
+                                            try {
+                                              await docRef.set(
+                                                {'budget': newBudget},
+                                                SetOptions(merge: true),
+                                              );
+
+                                              Navigator.pop(context);
+
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text("Budget saved successfully")),
+                                              );
+                                            } catch (e) {
+                                              print("Error saving budget: $e");
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text("Failed to save budget")),
+                                              );
+                                            }
+                                          },
+                                          child: Text(
+                                            "Save Budget",
+                                            style: TextStyle(color: Colors.white),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        );
-                      },
+                              );
+                            },
+                          );
+                        }
                     ),
                     Divider(),
                     SettingsTile(
