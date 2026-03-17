@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DashboardHeader extends StatelessWidget {
+class DashboardHeader extends StatefulWidget {
   final String name;
   final VoidCallback onProfilePressed;
   final VoidCallback onStatisticsPressed;
@@ -13,6 +13,11 @@ class DashboardHeader extends StatelessWidget {
   });
 
   @override
+  State<DashboardHeader> createState() => _DashboardHeaderState();
+}
+
+class _DashboardHeaderState extends State<DashboardHeader> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 25),
@@ -24,13 +29,13 @@ class DashboardHeader extends StatelessWidget {
             children: [
               Text("Welcome", style: TextStyle(fontSize: 25)),
               Text(
-                name,
+                widget.name,
                 style: TextStyle(fontSize: 25, height: 1.1, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           GestureDetector(
-            onTap: onProfilePressed,
+            onTap: widget.onProfilePressed,
             child: CircleAvatar(
               radius: 22,
               backgroundColor: Color(0xFF03624C),

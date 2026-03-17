@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
@@ -22,28 +23,64 @@ class _RegisterPageState extends State<RegisterPage> {
   Future signUp() async {
     if (!passwordConfirmed()) return;
 
-    print("Email: ${_emailController.text.trim()}");
-    print("Password: ${_passwordController.text.trim()}");
-
     setState(() {
       _isLoading = true;
     });
 
     try {
+      // 🔐 Create user
+      UserCredential userCredential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
+      // 👤 Save name in FirebaseAuth
+      await userCredential.user!.updateDisplayName(
+        _nameController.text,
+      );
+
+      await userCredential.user!.reload();
+
+      // ☁️ Save user data in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+        'name': _nameController.text,
+        'email': _emailController.text.trim(),
+        'createdAt': Timestamp.now(),
+      });
+
       if (!mounted) return;
 
+      // ✅ Success → go back (LoginStatusPage will handle navigation)
       Navigator.pop(context);
       return;
+
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
+      String message = "Registration failed";
+
+      if (e.code == 'email-already-in-use') {
+        message = "Email already in use";
+      } else if (e.code == 'weak-password') {
+        message = "Password should be at least 6 characters";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email format";
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? "Registration failed")),
+        SnackBar(content: Text(message)),
+      );
+    } catch (e) {
+      print("ERROR: $e");
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
       );
     }
 
@@ -100,14 +137,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
               SizedBox(height: 25),
 
-              /*
-
               //name
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person_outline),
-                  hintText: 'Full Name',
+                  hintText: 'Display Name',
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -117,9 +152,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
 
-               */
-
-              //SizedBox(height: 15),
+              SizedBox(height: 15),
 
               //email
               TextField(

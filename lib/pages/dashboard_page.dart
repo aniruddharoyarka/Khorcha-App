@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:khorcha/pages/profile_page.dart';
 import 'package:khorcha/pages/statistics_page.dart';
@@ -11,18 +12,27 @@ import 'package:khorcha/models/transactions.dart';
 
 import 'all_transactions_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   final VoidCallback onAddPressed;
   final List<TransactionModel> allTransactions;
 
   const DashboardPage({super.key, required this.onAddPressed, required this.allTransactions});
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  @override
   Widget build(BuildContext context) {
-    final List<TransactionModel> upcomingPayments = allTransactions.where((tx) => tx.isSubscription == true).toList();
+
+    final user = FirebaseAuth.instance.currentUser;
+
+
+    final List<TransactionModel> upcomingPayments = widget.allTransactions.where((tx) => tx.isSubscription == true).toList();
 
     double totalExpense = 0.0;
-    for (var tx in allTransactions) {
+    for (var tx in widget.allTransactions) {
       if (tx.type == TransactionType.expense) {
         totalExpense += tx.amount;
       }
@@ -33,7 +43,7 @@ class DashboardPage extends StatelessWidget {
         physics:  AlwaysScrollableScrollPhysics(),
         children: [
           SizedBox(height: 10),
-          DashboardHeader(name: "Shakibul Alam",
+          DashboardHeader(name: user?.displayName ?? "User",
             onProfilePressed: () {
               Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -44,7 +54,7 @@ class DashboardPage extends StatelessWidget {
           SizedBox(height: 15),
 
           BalanceCard(
-            onAddPressed: onAddPressed,
+            onAddPressed: widget.onAddPressed,
             totalExpense: totalExpense,
           ),
           SizedBox(height: 15),
@@ -56,7 +66,7 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => UpcomingPaymentsPage(
-                    payments: allTransactions.where((t) => t.isSubscription).toList(),
+                    payments: widget.allTransactions.where((t) => t.isSubscription).toList(),
                   ),
                 ),
               );
@@ -87,7 +97,7 @@ class DashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AllTransactionsPage(
-                    transactions: allTransactions,
+                    transactions: widget.allTransactions,
                   ),
                 ),
               );
@@ -99,10 +109,10 @@ class DashboardPage extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics:  NeverScrollableScrollPhysics(),
-            itemCount: allTransactions.length,
+            itemCount: widget.allTransactions.length,
             padding: EdgeInsets.zero,
             itemBuilder: (context, index) {
-              final tx = allTransactions[index];
+              final tx = widget.allTransactions[index];
               return RecentTransactionsCard(transaction: tx);
             },
           ),

@@ -12,10 +12,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   final user = FirebaseAuth.instance.currentUser;
 
-  final TextEditingController fullNameController =
-  TextEditingController(text: "Shakibul Alam");
-
-  final TextEditingController displayNameController = TextEditingController(text: "Shakib");
+  late TextEditingController displayNameController;
   late TextEditingController emailController;
   final TextEditingController currentPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
@@ -29,6 +26,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
+    displayNameController = TextEditingController(
+      text: user?.displayName ?? "User",
+    );
 
     emailController = TextEditingController(
       text: user?.email ?? "No Email",
@@ -55,13 +55,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Text("Profile Information", style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 15),
 
-            _buildTextField(
-              controller: fullNameController,
-              label: "Full Name",
-              icon: Icons.person,
-            ),
             SizedBox(height: 15),
             _buildTextField(
               controller: displayNameController,
