@@ -18,17 +18,34 @@ class _LoginPageState extends State<LoginPage> {
   Future signIn() async {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return Center(child: CircularProgressIndicator());
       },
     );
 
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
-    Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    } on FirebaseAuthException catch (e) {
+      Navigator.of(context).pop();
+
+      String message = "Login failed";
+      if (e.code == 'user-not-found') {
+        message = "No user found for this email";
+      } else if (e.code == 'wrong-password') {
+        message = "Incorrect password";
+      }
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(content: Text(message)),
+      );
+    }
   }
 
   @override
