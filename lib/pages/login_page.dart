@@ -19,15 +19,37 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   Future signIn() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // 👇 Added: Early Validation before calling Firebase
+    if (email.isEmpty && password.isEmpty) {
+      _showErrorSnackBar("Please enter your email and password.");
+      return;
+    } else if (email.isEmpty) {
+      _showErrorSnackBar("Please enter your email.");
+      return;
+    } else if (password.isEmpty) {
+      _showErrorSnackBar("Please enter your password.");
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        email: email,
+        password: password,
       );
+
+      // Note: If you want to navigate to HomePage on success,
+      // you should do it here! For example:
+      // if (mounted) {
+      //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+      // }
+
     } on FirebaseAuthException catch (e) {
       String message = "Login failed";
 
@@ -39,21 +61,8 @@ class _LoginPageState extends State<LoginPage> {
         message = e.message ?? "Something went wrong";
       }
 
-
-
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
+      _showErrorSnackBar(message);
     }
 
     if (!mounted) return;
@@ -61,6 +70,21 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  // Helper method to keep your code clean and avoid repeating the SnackBar code
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
   }
 
   @override
@@ -154,7 +178,6 @@ class _LoginPageState extends State<LoginPage> {
                       : () async {
                     await signIn();
                   },
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03624C),
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -177,7 +200,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
 
               SizedBox(height: 15),
               Divider(),
