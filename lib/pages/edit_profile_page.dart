@@ -10,15 +10,13 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-
-  late TextEditingController displayNameController;
-  late TextEditingController emailController;
-
+  final TextEditingController displayNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController currentPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  bool isEmailVerified = true;
+  bool isEmailVerified = false;
   bool obscureCurrent = true;
   bool obscureNew = true;
   bool obscureConfirm = true;
@@ -34,9 +32,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> fetchUserData() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      if (mounted) setState(() => _isFetching = false);
+      return;
+    }
 
     try {
+      await user.reload();
+      final updatedUser = FirebaseAuth.instance.currentUser;
+
       final doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -44,58 +48,116 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       final data = doc.data();
 
-      displayNameController = TextEditingController(
-        text: data?['name'] ?? "User",
-      );
-
-      emailController = TextEditingController(
-        text: user.email ?? "No Email",
-      );
-
-      setState(() {
-        _isFetching = false;
-      });
+      displayNameController.text = data?['name'] ?? "User";
+      emailController.text = updatedUser?.email ?? "No Email";
+      isEmailVerified = updatedUser?.emailVerified ?? false;
 
     } catch (e) {
-      print("Error fetching user data: $e");
-      _isFetching = false;
+      debugPrint("Error fetching user data: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFetching = false;
+        });
+      }
     }
   }
 
+  Future<void> saveProfileChanges() async {
+    FocusScope.of(context).unfocus();
 
-  Future updateDisplayName() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
     final newName = displayNameController.text.trim();
+    final currentPassword = currentPasswordController.text.trim();
+    final newPassword = newPasswordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
 
     if (newName.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Name cannot be empty")));
+      _showSnackBar("Name cannot be empty");
       return;
+    }
+
+    bool isChangingPassword = currentPassword.isNotEmpty ||
+        newPassword.isNotEmpty ||
+        confirmPassword.isNotEmpty;
+
+    if (isChangingPassword) {
+      if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+        _showSnackBar("All password fields are required to change your password");
+        return;
+      }
+      if (newPassword != confirmPassword) {
+        _showSnackBar("New passwords do not match");
+        return;
+      }
+      if (newPassword.length < 6) {
+        _showSnackBar("Password must be at least 6 characters");
+        return;
+      }
     }
 
     setState(() => _isLoading = true);
 
     try {
+      // 1. Update Display Name in Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .set({'name': newName}, SetOptions(merge: true));
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Name updated successfully")));
+      // 2. Update Password in Firebase Auth (if requested)
+      if (isChangingPassword && user.email != null) {
+        final credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: currentPassword,
+        );
+        await user.reauthenticateWithCredential(credential);
+        await user.updatePassword(newPassword);
+      }
 
-      // ✅ send signal back
+      if (!mounted) return;
+      _showSnackBar("Profile updated successfully");
       Navigator.pop(context, true);
 
+    } on FirebaseAuthException catch (e) {
+      String message = "Failed to update profile";
+      if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        message = "Current password is incorrect";
+      } else if (e.code == 'too-many-requests') {
+        message = "Too many attempts. Try again later";
+      }
+      if (!mounted) return;
+      _showSnackBar(message);
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Failed to update name")));
-      print("Firestore update error: $e");
+      if (!mounted) return;
+      _showSnackBar("Something went wrong");
+      debugPrint("Update error: $e");
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> triggerPasswordReset() async {
+    final email = emailController.text.trim();
+    if (email.isEmpty || email == "No Email") {
+      _showSnackBar("No valid email to send reset link to.");
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _showSnackBar("Password reset email sent to $email!");
+    } catch (e) {
+      _showSnackBar("Failed to send password reset email.");
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -110,8 +172,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    // ⏳ Loading UI (important fix)
     if (_isFetching) {
       return Scaffold(
         appBar: AppBar(title: Text("Edit Profile")),
@@ -128,10 +188,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Profile Information",
+            Text(
+              "Profile Information",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
             SizedBox(height: 15),
 
             _buildTextField(
@@ -146,21 +206,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: emailController,
               label: "Email",
               icon: Icons.email,
-              enabled: !isEmailVerified,
-              helperText: isEmailVerified
-                  ? "Email cannot be changed once verified"
-                  : null,
+              enabled: false, // Permanently locked
             ),
 
-            SizedBox(height: 30),
 
+
+            SizedBox(height: 30),
             Text(
               "Change Password",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
             SizedBox(height: 15),
-
             _buildPasswordField(
               controller: currentPasswordController,
               label: "Current Password",
@@ -169,9 +225,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 setState(() => obscureCurrent = !obscureCurrent);
               },
             ),
-
             SizedBox(height: 15),
-
             _buildPasswordField(
               controller: newPasswordController,
               label: "New Password",
@@ -180,9 +234,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 setState(() => obscureNew = !obscureNew);
               },
             ),
-
             SizedBox(height: 15),
-
             _buildPasswordField(
               controller: confirmPasswordController,
               label: "Confirm New Password",
@@ -191,24 +243,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 setState(() => obscureConfirm = !obscureConfirm);
               },
             ),
-
             SizedBox(height: 10),
-
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
-                child: Text("Reset Password"),
+                onPressed: triggerPasswordReset,
+                child: Text("Reset Password via Email"),
               ),
             ),
-
             SizedBox(height: 30),
-
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: updateDisplayName,
+                onPressed: _isLoading ? null : saveProfileChanges,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF03624C),
                   shape: RoundedRectangleBorder(
@@ -216,14 +264,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                 ),
                 child: _isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
+                    ? SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                )
                     : Text(
                   "Save Changes",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-
             SizedBox(height: 30),
           ],
         ),

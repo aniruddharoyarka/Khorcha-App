@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:khorcha/pages/register_page.dart';
 
+import 'forget_password_page.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -132,6 +133,10 @@ class _LoginPageState extends State<LoginPage> {
               GestureDetector(
                 onTap: () {
                   print("Forget Password Clicked");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ForgetPasswordPage()),
+                  );
                 },
                 child: Text(
                   "Forget Password?",

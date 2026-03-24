@@ -93,6 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     ElevatedButton(
                       onPressed: () async {
+                        print(user);
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
