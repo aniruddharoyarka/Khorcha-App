@@ -14,15 +14,41 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  @override
-
   final user = FirebaseAuth.instance.currentUser;
 
+  String name = "Loading...";
+
+  Future<void> fetchName() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) return;
+
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users').doc(currentUser.uid).get();
+
+      if (doc.exists && doc.data() != null) {
+        setState(() {
+          name = doc['name'] ?? "User";
+        });
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchName();
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
     DateTime registrationDate = DateTime.now();
 
-    String registeredSince =
-        "${registrationDate.day}-${registrationDate.month}-${registrationDate.year}";
 
     return Scaffold(
       appBar: AppBar(title: Text("Profile")),
@@ -47,27 +73,34 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Icon(Icons.person, color: Colors.white, size: 35),
                     ),
                     SizedBox(height: 10),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(user?.displayName ?? "User",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        Text(
+                          name,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(width: 5),
                         Icon(Icons.verified, color: Color(0xFF03624C)),
                       ],
                     ),
+
                     SizedBox(height: 5),
                     Text(user?.email ?? "No Email"),
                     SizedBox(height: 5),
+
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditProfilePage(),
                           ),
                         );
+
+                        fetchName();
                       },
                       child: Text("Edit Profile"),
                       style: ElevatedButton.styleFrom(
@@ -85,7 +118,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
+
               SizedBox(height: 10),
+
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -98,126 +133,140 @@ class _ProfilePageState extends State<ProfilePage> {
                     SettingsTile(
                       icon: Icons.flag,
                       title: "Monthly Budget",
-                        onTap: () async {
-                          final user = FirebaseAuth.instance.currentUser;
-                          if (user == null) return;
+                      onTap: () async {
+                        final user = FirebaseAuth.instance.currentUser;
+                        if (user == null) return;
 
-                          final docRef = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid);
+                        final docRef = FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(user.uid);
 
-                          int currentBudget = 0;
+                        int currentBudget = 0;
 
-                          // 🔹 Fetch existing budget
-                          try {
-                            final doc = await docRef.get();
-                            if (doc.exists && doc.data() != null) {
-                              currentBudget = doc['budget'] ?? 0;
-                            }
-                          } catch (e) {
-                            print("Error fetching budget: $e");
+                        try {
+                          final doc = await docRef.get();
+                          if (doc.exists && doc.data() != null) {
+                            currentBudget = doc['budget'] ?? 0;
                           }
-
-                          final TextEditingController budgetController =
-                          TextEditingController(text: currentBudget.toString());
-
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Dialog(
-                                insetPadding: EdgeInsets.symmetric(horizontal: 25),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: SingleChildScrollView(
-                                  padding: EdgeInsets.all(25),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Monthly Budget",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20),
-
-                                      TextField(
-                                        controller: budgetController,
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          labelText: "Enter Budget Amount",
-                                          prefixText: "৳ ",
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                      ),
-
-                                      SizedBox(height: 25),
-
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 50,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03624C),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          onPressed: () async {
-                                            final newBudget =
-                                            int.tryParse(budgetController.text.trim());
-
-                                            if (newBudget == null) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text("Enter a valid number")),
-                                              );
-                                              return;
-                                            }
-
-                                            try {
-                                              await docRef.set(
-                                                {'budget': newBudget},
-                                                SetOptions(merge: true),
-                                              );
-
-                                              Navigator.pop(context);
-
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text("Budget saved successfully")),
-                                              );
-                                            } catch (e) {
-                                              print("Error saving budget: $e");
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text("Failed to save budget")),
-                                              );
-                                            }
-                                          },
-                                          child: Text(
-                                            "Save Budget",
-                                            style: TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
+                        } catch (e) {
+                          print("Error fetching budget: $e");
                         }
+
+                        final TextEditingController budgetController =
+                        TextEditingController(
+                            text: currentBudget.toString());
+
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              insetPadding:
+                              EdgeInsets.symmetric(horizontal: 25),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: SingleChildScrollView(
+                                padding: EdgeInsets.all(25),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Monthly Budget",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    TextField(
+                                      controller: budgetController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        labelText: "Enter Budget Amount",
+                                        prefixText: "৳ ",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 25),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                          Color(0xFF03624C),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          final newBudget = int.tryParse(
+                                              budgetController.text.trim());
+
+                                          if (newBudget == null) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      "Enter a valid number")),
+                                            );
+                                            return;
+                                          }
+
+                                          try {
+                                            await docRef.set(
+                                              {'budget': newBudget},
+                                              SetOptions(merge: true),
+                                            );
+
+                                            Navigator.pop(context);
+
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      "Budget saved successfully")),
+                                            );
+                                          } catch (e) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      "Failed to save budget")),
+                                            );
+                                          }
+                                        },
+                                        child: Text("Save Budget",
+                                            style: TextStyle(
+                                                color: Colors.white)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
-                    Divider(),
+
+                    //Divider(),
+
+                    //daily reminder
+                    /*
                     SettingsTile(
                       icon: Icons.notifications,
                       title: "Daily Reminder",
                       onTap: () {
                         bool isReminderOn = true;
-                        TimeOfDay selectedTime = TimeOfDay(hour: 20, minute: 0);
+                        TimeOfDay selectedTime =
+                        TimeOfDay(hour: 20, minute: 0);
 
                         showDialog(
                           context: context,
@@ -233,7 +282,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           "Daily Reminder",
@@ -243,10 +292,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                         ),
                                         SizedBox(height: 20),
-
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text("Enable Reminder"),
                                             Switch(
@@ -260,23 +308,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ),
                                           ],
                                         ),
-
                                         if (isReminderOn) ...[
                                           SizedBox(height: 5),
-
                                           ListTile(
-                                            contentPadding: EdgeInsets.zero,
+                                            contentPadding:
+                                            EdgeInsets.zero,
                                             title: Text("Reminder Time"),
                                             subtitle: Text(
                                               selectedTime.format(context),
                                             ),
-                                            trailing: Icon(Icons.access_time),
+                                            trailing:
+                                            Icon(Icons.access_time),
                                             onTap: () async {
                                               final picked =
-                                                  await showTimePicker(
-                                                    context: context,
-                                                    initialTime: selectedTime,
-                                                  );
+                                              await showTimePicker(
+                                                context: context,
+                                                initialTime: selectedTime,
+                                              );
 
                                               if (picked != null) {
                                                 setState(() {
@@ -286,31 +334,21 @@ class _ProfilePageState extends State<ProfilePage> {
                                             },
                                           ),
                                         ],
-
                                         SizedBox(height: 25),
-
                                         SizedBox(
                                           width: double.infinity,
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color(
-                                                0xFF03624C,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
+                                              backgroundColor:
+                                              Color(0xFF03624C),
                                             ),
                                             onPressed: () {
                                               Navigator.pop(context);
                                             },
-                                            child: Text(
-                                              "Save",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
+                                            child: Text("Save",
+                                                style: TextStyle(
+                                                    color: Colors.white)),
                                           ),
                                         ),
                                       ],
@@ -323,7 +361,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         );
                       },
                     ),
+                     */
+
                     Divider(),
+
                     SettingsTile(
                       icon: Icons.info,
                       title: "About Khorcha",
@@ -339,37 +380,29 @@ class _ProfilePageState extends State<ProfilePage> {
                             return Padding(
                               padding: EdgeInsets.all(25),
                               child: Column(
-                                mainAxisSize: MainAxisSize.min, // Sheet only takes needed space
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
                                     width: 40,
                                     height: 4,
                                     decoration: BoxDecoration(
                                       color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius:
+                                      BorderRadius.circular(10),
                                     ),
                                   ),
                                   SizedBox(height: 20),
-                                  Text(
-                                    "About Khorcha",
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Version 1.0.0",
-                                    style: TextStyle(color: Colors.grey[600]),
-                                  ),
+                                  Text("About Khorcha",
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold)),
+                                  Text("Version 1.0.0",
+                                      style: TextStyle(
+                                          color: Colors.grey[600])),
                                   Divider(height: 30),
                                   Text(
-                                    "Khorcha is your personal finance companion that makes tracking expenses simple, budgeting smarter, and saving easier through intelligent insights and clean visual reports.",
-                                  ),
+                                      "Khorcha is your personal finance companion. Developed by Ushriba Rahman & Aniruddha Roy Arka"),
                                   SizedBox(height: 10),
-                                  Text(
-                                    "Developed by Ushriba Rahman & Aniruddha Roy Arka",
-                                  ),
-                                  SizedBox(height: 30),
                                 ],
                               ),
                             );
@@ -380,7 +413,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     Divider(),
 
-                    // 🚪 Logout
                     SettingsTile(
                       icon: Icons.logout,
                       title: "Logout",
@@ -390,38 +422,40 @@ class _ProfilePageState extends State<ProfilePage> {
                           builder: (context) {
                             return AlertDialog(
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius:
+                                BorderRadius.circular(20),
                               ),
                               title: Row(
                                 children: [
-                                  Icon(Icons.logout, color: Color(0xFF03624C)),
+                                  Icon(Icons.logout,
+                                      color: Color(0xFF03624C)),
                                   SizedBox(width: 10),
                                   Text("Logout"),
                                 ],
                               ),
                               content: Text(
-                                "You will need to login again to access your account.",
-                              ),
+                                  "You will need to login again to access your account."),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: () =>
+                                      Navigator.pop(context),
                                   child: Text("Cancel"),
                                 ),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03624C),
-                                  ),
+                                      backgroundColor:
+                                      Color(0xFF03624C)),
                                   onPressed: () async {
                                     Navigator.pop(context);
-                                    await FirebaseAuth.instance.signOut();
+                                    await FirebaseAuth.instance
+                                        .signOut();
                                     if (context.mounted) {
                                       Navigator.pop(context);
                                     }
                                   },
-                                  child: Text(
-                                    "Logout",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                                  child: Text("Logout",
+                                      style: TextStyle(
+                                          color: Colors.white)),
                                 ),
                               ],
                             );

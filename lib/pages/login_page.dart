@@ -29,17 +29,29 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on FirebaseAuthException catch (e) {
       String message = "Login failed";
-      if (e.code == 'user-not-found') {
-        message = "No user found for this email";
-      } else if (e.code == 'wrong-password') {
-        message = "Incorrect password";
+
+      if (e.code == 'invalid-credential') {
+        message = "Email or password is incorrect";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email format";
+      } else {
+        message = e.message ?? "Something went wrong";
       }
+
+
 
       if (!mounted) return;
 
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(content: Text(message)),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       );
     }
 

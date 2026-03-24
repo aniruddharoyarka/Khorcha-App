@@ -11,10 +11,9 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
 
-  final user = FirebaseAuth.instance.currentUser;
-
   late TextEditingController displayNameController;
   late TextEditingController emailController;
+
   final TextEditingController currentPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
@@ -25,12 +24,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool obscureConfirm = true;
 
   bool _isLoading = false;
+  bool _isFetching = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      final data = doc.data();
+
+      displayNameController = TextEditingController(
+        text: data?['name'] ?? "User",
+      );
+
+      emailController = TextEditingController(
+        text: user.email ?? "No Email",
+      );
+
+      setState(() {
+        _isFetching = false;
+      });
+
+    } catch (e) {
+      print("Error fetching user data: $e");
+      _isFetching = false;
+    }
+  }
+
 
   Future updateDisplayName() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final newName = displayNameController.text;
+    final newName = displayNameController.text.trim();
+
     if (newName.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Name cannot be empty")));
@@ -48,7 +86,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Name updated successfully")));
 
-      Navigator.pop(context);
+      // ✅ send signal back
+      Navigator.pop(context, true);
 
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -60,25 +99,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    displayNameController = TextEditingController(
-      text: user?.displayName ?? "User",
-    );
-
-    emailController = TextEditingController(
-      text: user?.email ?? "No Email",
-    );
-  }
-
-  @override
   void dispose() {
+    displayNameController.dispose();
     emailController.dispose();
+    currentPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    // ⏳ Loading UI (important fix)
+    if (_isFetching) {
+      return Scaffold(
+        appBar: AppBar(title: Text("Edit Profile")),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Profile"),
@@ -88,17 +128,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Profile Information", style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold),
+            Text("Profile Information",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             SizedBox(height: 15),
+
             _buildTextField(
               controller: displayNameController,
               label: "Display Name",
               icon: Icons.badge,
             ),
+
             SizedBox(height: 15),
+
             _buildTextField(
               controller: emailController,
               label: "Email",
@@ -108,45 +151,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ? "Email cannot be changed once verified"
                   : null,
             ),
+
             SizedBox(height: 30),
+
             Text(
               "Change Password",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+
             SizedBox(height: 15),
+
             _buildPasswordField(
               controller: currentPasswordController,
               label: "Current Password",
               obscure: obscureCurrent,
               toggle: () {
-                setState(() {
-                  obscureCurrent = !obscureCurrent;
-                });
+                setState(() => obscureCurrent = !obscureCurrent);
               },
             ),
+
             SizedBox(height: 15),
+
             _buildPasswordField(
               controller: newPasswordController,
               label: "New Password",
               obscure: obscureNew,
               toggle: () {
-                setState(() {
-                  obscureNew = !obscureNew;
-                });
+                setState(() => obscureNew = !obscureNew);
               },
             ),
+
             SizedBox(height: 15),
+
             _buildPasswordField(
               controller: confirmPasswordController,
               label: "Confirm New Password",
               obscure: obscureConfirm,
               toggle: () {
-                setState(() {
-                  obscureConfirm = !obscureConfirm;
-                });
+                setState(() => obscureConfirm = !obscureConfirm);
               },
             ),
+
             SizedBox(height: 10),
+
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -154,12 +201,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: Text("Reset Password"),
               ),
             ),
+
             SizedBox(height: 30),
+
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed:updateDisplayName,
+                onPressed: updateDisplayName,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF03624C),
                   shape: RoundedRectangleBorder(
@@ -168,9 +217,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 child: _isLoading
                     ? CircularProgressIndicator(color: Colors.white)
-                    : Text("Save Changes", style: TextStyle(fontSize: 16, color: Colors.white)),
+                    : Text(
+                  "Save Changes",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
               ),
             ),
+
             SizedBox(height: 30),
           ],
         ),
@@ -224,4 +277,3 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 }
-
