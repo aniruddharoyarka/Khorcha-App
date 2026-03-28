@@ -3,7 +3,7 @@ import 'package:khorcha/pages/dashboard_page.dart';
 import 'package:khorcha/pages/statistics_page.dart';
 import 'package:khorcha/pages/transaction_page.dart';
 import 'package:khorcha/models/transactions.dart';
-import 'package:khorcha/widgets/line_graph.dart';
+import 'package:khorcha/widgets/guilt_meter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,13 +16,13 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<TransactionModel> allTransactions = [
-    TransactionModel(id: '1', title: "Grocery", amount: 450.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense,),
-    TransactionModel(id: '2', title: "Freelance", amount: 9000.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Work", type: TransactionType.income,),
-    TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true,),
-    TransactionModel(id: '4', title: "Salary", amount: 4000.0, date: DateTime.now().subtract(Duration(days: 28)), category: "Work", type: TransactionType.income,),
-    TransactionModel(id: '5', title: "Rent", amount: 1000.0, date: DateTime.now().subtract(Duration(days: 20)), category: "Housing", type: TransactionType.expense,),
-    TransactionModel(id: '6', title: "Electricity Bill", amount: 350.0, date: DateTime.now().subtract(Duration(days: 18)), category: "Utilities", type: TransactionType.expense,),
-    TransactionModel(id: '7', title: "Internet", amount: 250.0, date: DateTime.now().subtract(Duration(days: 16)), category: "Utilities", type: TransactionType.expense, isSubscription: true,),
+    TransactionModel(id: '1', title: "Grocery", amount: 1000.0, date: DateTime.now().subtract(Duration(days: 25)), category: "Food", type: TransactionType.expense, guiltValue: 30),
+    TransactionModel(id: '2', title: "Freelance", amount: 9000.0, date: DateTime.now().subtract(Duration(days: 15)), category: "Work", type: TransactionType.income, guiltValue: 70),
+    TransactionModel(id: '3', title: "Spotify", amount: 100.0, date: DateTime.now(), category: "Entertainment", type: TransactionType.expense, isSubscription: true, guiltValue: -60),
+    TransactionModel(id: '4', title: "Salary", amount: 15000.0, date: DateTime.now().subtract(Duration(days: 28)), category: "Work", type: TransactionType.income, guiltValue: 85),
+    TransactionModel(id: '5', title: "Rent", amount: 5000.0, date: DateTime.now().subtract(Duration(days: 20)), category: "Housing", type: TransactionType.expense, guiltValue: 0),
+    TransactionModel(id: '6', title: "Electricity Bill", amount: 3000.0, date: DateTime.now().subtract(Duration(days: 18)), category: "Utilities", type: TransactionType.expense, guiltValue: -20),
+    TransactionModel(id: '7', title: "Internet", amount: 500.0, date: DateTime.now().subtract(Duration(days: 16)), category: "Utilities", type: TransactionType.expense, isSubscription: true, guiltValue: -30),
   ];
 
   void _navigateToTransactionPage() {

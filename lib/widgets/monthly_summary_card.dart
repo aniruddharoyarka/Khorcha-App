@@ -91,7 +91,7 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
   Widget build(BuildContext context) {
     double currentBalance = income - expense;
     return Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(right: 20, left: 20, bottom: 15, top: 20),
         child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
