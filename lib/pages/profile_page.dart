@@ -47,8 +47,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime registrationDate = DateTime.now();
-
 
     return Scaffold(
       appBar: AppBar(title: Text("Profile")),
