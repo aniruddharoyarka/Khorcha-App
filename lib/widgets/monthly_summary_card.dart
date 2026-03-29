@@ -1,18 +1,17 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:khorcha/models/transactions.dart';
 
 class MonthlySummaryCard extends StatefulWidget {
   final List<TransactionModel> transactions;
-  const MonthlySummaryCard({super.key, required this.transactions});
+  final DateTime currentMonth;
+  final Function(DateTime) onMonthChanged;
+  const MonthlySummaryCard({super.key, required this.transactions,required this.currentMonth, required this.onMonthChanged,});
 
   @override
   State<MonthlySummaryCard> createState() => _MonthlySummaryCardState();
 }
 
 class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
-  DateTime currentMonth = DateTime.now();
   double income = 0;
   double expense = 0;
 
@@ -51,8 +50,8 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
     double newIncome = 0;
     double newExpense = 0;
 
-    for(var t in widget.transactions){
-      if(t.date.year == currentMonth.year && t.date.month == currentMonth.month){
+    for (var t in widget.transactions){
+      if(t.date.year == widget.currentMonth.year && t.date.month == widget.currentMonth.month){
         if(t.type == TransactionType.income){
           newIncome += t.amount;
         }
@@ -67,18 +66,14 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
     });
   }
 
-  void _previousMonth(){
-    setState(() {
-      currentMonth = DateTime(currentMonth.year, currentMonth.month-1);
-      _calculateMonthData();
-    });
+  void _previousMonth() {
+    final newMonth = DateTime(widget.currentMonth.year, widget.currentMonth.month - 1);
+    widget.onMonthChanged(newMonth);
   }
 
-  void _nextMonth(){
-    setState(() {
-      currentMonth = DateTime(currentMonth.year, currentMonth.month+1);
-      _calculateMonthData();
-    });
+  void _nextMonth() {
+    final newMonth = DateTime(widget.currentMonth.year, widget.currentMonth.month + 1);
+    widget.onMonthChanged(newMonth);
   }
 
   @override
@@ -89,7 +84,7 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
 
   @override
   Widget build(BuildContext context) {
-    double currentBalance = income - expense;
+    //double currentBalance = income - expense;
     return Padding(
         padding: EdgeInsets.only(right: 20, left: 20, bottom: 15, top: 20),
         child: Container(
@@ -111,7 +106,7 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
                   ),
 
                   Text(
-                    "${getMonth(currentMonth.month)} ${currentMonth.year}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    "${getMonth(widget.currentMonth.month)} ${widget.currentMonth.year}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
 
                   IconButton(
@@ -121,12 +116,12 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
                 ],
               ),
           
-              //Current Balance
+             /* //Current Balance
               SizedBox(height: 5),
               Text("Current Balance", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
               Text("৳${currentBalance.toStringAsFixed(0)}",
                 style: TextStyle(fontSize: 28, color: Color(0xFF03624C),fontWeight: FontWeight.w500),
-              ),
+              ),*/
                 
               //Calculated Income-Expense 
               SizedBox(height: 15),
@@ -140,10 +135,10 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Income", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                            Text("Income", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                             Text(
                               "৳${income.toStringAsFixed(0)}",
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
                             ),
                           ],
                         )
@@ -159,10 +154,10 @@ class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Expense", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                            Text("Expense", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                             Text(
                               "৳${expense.toStringAsFixed(0)}",
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
                             ),
                           ],
                         )

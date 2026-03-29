@@ -42,17 +42,12 @@ class _GuiltMeter extends State<GuiltMeter> {
             value: guiltValue,
             min: -100,
             max: 100,
+            divisions: 20,
             activeColor: Color(0xFF03624C),
             thumbColor: getColor(),
             onChanged: (value){
               setState(() {
-                if(value < -50){
-                  guiltValue = -100;
-                } else if(value > 50){
-                  guiltValue = 100;
-                } else{
-                  guiltValue = 0;
-                }
+               guiltValue = value;
               });
               widget.onValueVisibilityChanged(guiltValue);
             }

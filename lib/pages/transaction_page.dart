@@ -30,8 +30,8 @@ class _TransactionPageState extends State<TransactionPage> {
   bool _isAddingCategory = false;
 
   final List<String> _types = ['Income', 'Expense'];
-  final List<String> _incomeCategories = ['Salary', 'Freelance', 'Gift',];
-  final List<String> _expenseCategories = ['Food', 'Grocery', 'Internet', 'Rent', 'Travel',];
+  final List<String> _incomeCategories = ['Salary', 'Business', 'Investments', 'Gifts', 'Rental', 'Other'];
+  final List<String> _expenseCategories = ['Food', 'Housing', 'Transport', 'Health', 'Travel', 'Shopping', 'Entertainment', 'Education', 'Finance', 'Miscellaneous'];
 
   void _showDatePicker() {
     showDatePicker(
@@ -58,9 +58,7 @@ class _TransactionPageState extends State<TransactionPage> {
     }
   }
 
-  // inside _TransactionPageState
-
-  double guiltValue = 0.0; // Initialize a default guilt value
+  double guiltValue = 0.0;
   DateTime? nextPaymentDate;
 
   void _computeNextPaymentDate() {
@@ -69,7 +67,6 @@ class _TransactionPageState extends State<TransactionPage> {
       int month = _selectedDate!.month + _billingCycle;
       int day = _selectedDate!.day;
 
-      // handle month overflow
       while (month > 12) {
         month -= 12;
         year += 1;
@@ -89,7 +86,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
       await firestoreService.addTransaction(
         TransactionModel(
-          id: '', // Firestore will auto-generate
+          id: '',
           title: _titleController.text.trim(),
           amount: double.parse(_amountController.text.trim()),
           date: _selectedDate!,

@@ -11,13 +11,6 @@ class StatisticsPage extends StatefulWidget {
     State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
-List<TransactionModel> getLastMonthTransactions(List<TransactionModel> transactions){
-  DateTime now = DateTime.now();
-  DateTime lastMonth = DateTime(now.year, now.month-1);
-
-  return transactions.where((t) => t.date.month == lastMonth.month && t.date.year == lastMonth.year).toList();
-}
-
 double _calculateGuiltPercentage(List<TransactionModel> transactions){
   if (transactions.isEmpty) return 0;
   double total = 0;
@@ -39,6 +32,21 @@ String guiltMessage(double value){
 
 
 class _StatisticsPageState extends State<StatisticsPage>{
+  DateTime currentMonth = DateTime.now();
+
+  void changeMonth(DateTime newMonth) {
+    setState(() {
+      currentMonth = newMonth;
+    });
+  }
+
+  List<TransactionModel> get filteredTransactions {
+    return widget.transactions.where((t) {
+      return t.date.year == currentMonth.year &&
+          t.date.month == currentMonth.month;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     String highestExpenseTitle = "";
@@ -46,10 +54,9 @@ class _StatisticsPageState extends State<StatisticsPage>{
     String highestIncomeTitle = "";
     double highestIncomeAmount = 0;
 
-    final lastMonthTransactions = getLastMonthTransactions(widget.transactions);
-    double guiltPercentage = _calculateGuiltPercentage(lastMonthTransactions);
+    double guiltPercentage = _calculateGuiltPercentage(filteredTransactions);
 
-    for(var t in widget.transactions){
+    for(var t in filteredTransactions){
       if(t.type == TransactionType.expense){
         if(t.amount > highestExpenseAmount){
           highestExpenseAmount = t.amount;
@@ -58,7 +65,7 @@ class _StatisticsPageState extends State<StatisticsPage>{
       }
     }
 
-    for(var t in widget.transactions){
+    for(var t in filteredTransactions){
       if(t.type == TransactionType.income){
         if(t.amount > highestIncomeAmount){
           highestIncomeAmount = t.amount;
@@ -78,9 +85,13 @@ class _StatisticsPageState extends State<StatisticsPage>{
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.only(bottom: 20),
               children: [
-                MonthlySummaryCard(transactions: widget.transactions),
+                MonthlySummaryCard(
+                    transactions: widget.transactions,
+                    currentMonth: currentMonth,
+                    onMonthChanged: changeMonth,
+                ),
 
-                ExpensePieChart(transactions: widget.transactions),
+                ExpensePieChart(transactions: filteredTransactions, selectedMonth: currentMonth),
 
                 Row(
                   children: [

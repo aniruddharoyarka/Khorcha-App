@@ -4,12 +4,16 @@ import 'package:fl_chart/fl_chart.dart';
 
 class ExpensePieChart extends StatelessWidget {
   final List<TransactionModel> transactions;
-
-  const ExpensePieChart({super.key, required this.transactions});
+  final DateTime selectedMonth;
+  const ExpensePieChart({super.key, required this.transactions, required this.selectedMonth});
 
   @override
   Widget build(BuildContext context) {
-    final allExpenses = transactions.where((t) => t.type == TransactionType.expense).toList();
+    final allExpenses = transactions.where((t) =>
+        t.type == TransactionType.expense &&
+            t.date.month == selectedMonth.month &&
+            t.date.year == selectedMonth.year
+    ).toList();
 
     double totalExpense = 0;
     for (var expense in allExpenses) {
