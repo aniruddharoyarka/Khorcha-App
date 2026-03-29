@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:khorcha/widgets/guilt_meter.dart';
 
+import '../models/transactions.dart';
+import '../services/firestore_service.dart';
+
 class TransactionPage extends StatefulWidget {
   const TransactionPage({super.key});
 
@@ -9,6 +12,7 @@ class TransactionPage extends StatefulWidget {
 }
 
 class _TransactionPageState extends State<TransactionPage> {
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _titleController = TextEditingController();
@@ -51,6 +55,58 @@ class _TransactionPageState extends State<TransactionPage> {
         _isAddingCategory = false;
         _newCategoryController.clear();
       });
+    }
+  }
+
+  // inside _TransactionPageState
+
+  double guiltValue = 0.0; // Initialize a default guilt value
+  DateTime? nextPaymentDate;
+
+  void _computeNextPaymentDate() {
+    if (_isSubscription && _selectedDate != null) {
+      int year = _selectedDate!.year;
+      int month = _selectedDate!.month + _billingCycle;
+      int day = _selectedDate!.day;
+
+      // handle month overflow
+      while (month > 12) {
+        month -= 12;
+        year += 1;
+      }
+
+      nextPaymentDate = DateTime(year, month, day);
+    } else {
+      nextPaymentDate = null;
+    }
+  }
+
+  void _saveTransaction() async {
+    if (_formKey.currentState!.validate() && _selectedDate != null) {
+      _computeNextPaymentDate();
+
+      final firestoreService = FirestoreService();
+
+      await firestoreService.addTransaction(
+        TransactionModel(
+          id: '', // Firestore will auto-generate
+          title: _titleController.text.trim(),
+          amount: double.parse(_amountController.text.trim()),
+          date: _selectedDate!,
+          category: _selectedCategory!,
+          type: _selectedType == 'Income' ? TransactionType.income : TransactionType.expense,
+          guiltValue: guiltValue,
+          note: _noteController.text.trim(),
+          isSubscription: _isSubscription,
+          billingCycle: _billingCycle,
+          nextPaymentDate: nextPaymentDate,
+        ),
+      );
+
+      Navigator.pop(context);
+    } else if (_selectedDate == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please select a date")));
     }
   }
 
@@ -258,7 +314,14 @@ class _TransactionPageState extends State<TransactionPage> {
                   ),
                 ),
 
-              if(_selectedType == 'Expense') GuiltMeter(),
+              if (_selectedType == 'Expense')
+                GuiltMeter(
+                  onValueVisibilityChanged: (value) {
+                    setState(() {
+                      guiltValue = value;
+                    });
+                  },
+                ),
 
               SizedBox(height: 40),
 
@@ -267,7 +330,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: _handleSave,
+                  onPressed: _saveTransaction,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03624C),
                     shape: RoundedRectangleBorder(
@@ -317,27 +380,5 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  void _handleSave() {
-    if (_formKey.currentState!.validate() && _selectedDate != null) {
-      // logic for next payment
-      DateTime? nextPaymentDate;
-      if (_isSubscription) {
-        nextPaymentDate = DateTime(
-          _selectedDate!.year,
-          _selectedDate!.month + _billingCycle,
-          _selectedDate!.day,
-        );
-      }
-
-      print(
-        "Saving: ${_titleController.text}, Sub: $_isSubscription, Next: $nextPaymentDate",
-      );
-      Navigator.pop(context);
-    } else if (_selectedDate == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Please select a date")));
-    }
-  }
 }
 

@@ -151,7 +151,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
           SizedBox(height: 10),
 
-          SizedBox(
+          upcomingPayments.isEmpty
+              ? _buildEmptyState("No upcoming payments found")
+              : SizedBox(
             height: 83,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -182,7 +184,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
           SizedBox(height: 15),
 
-          ListView.builder(
+          widget.allTransactions.isEmpty
+              ? Padding(
+            padding: EdgeInsets.symmetric(vertical: 40),
+            child: _buildEmptyState("No transactions found yet"),
+          )
+              : ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemCount: widget.allTransactions.length,
@@ -196,4 +203,24 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
+}
+
+Widget _buildEmptyState(String message) {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.sentiment_dissatisfied, color: Colors.grey[400], size: 30),
+        SizedBox(height: 8),
+        Text(
+          message,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 14,
+            //fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
+    ),
+  );
 }

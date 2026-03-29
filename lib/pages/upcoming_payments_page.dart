@@ -10,21 +10,26 @@ class UpcomingPaymentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:  Color(0xFFF9FFFC),
-      appBar: AppBar(
-        title:  Text("Upcoming Payments"),
-        centerTitle: true,
-      ),
+      backgroundColor: Color(0xFFF9FFFC),
+      appBar: AppBar(title: Text("Upcoming Payments"), centerTitle: true),
       body: payments.isEmpty
-          ?  Center(child: Text("No upcoming payments found"))
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.sentiment_dissatisfied, color: Colors.grey[400], size: 40),
+                  SizedBox(height: 5),
+                  Text("No upcoming payments found"),
+                ],
+              ),
+            )
           : ListView.builder(
-        padding:  EdgeInsets.only(top: 20),
-        itemCount: payments.length,
-        itemBuilder: (context, index) {
-          return RecentTransactionsCard(transaction: payments[index]);
-        },
-      ),
+              padding: EdgeInsets.only(top: 20),
+              itemCount: payments.length,
+              itemBuilder: (context, index) {
+                return RecentTransactionsCard(transaction: payments[index]);
+              },
+            ),
     );
   }
 }
-

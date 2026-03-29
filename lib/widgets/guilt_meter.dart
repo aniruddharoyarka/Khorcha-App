@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class GuiltMeter extends StatefulWidget {
-  const GuiltMeter({super.key});
+  final Function(double) onValueVisibilityChanged;
+  const GuiltMeter({super.key, required this.onValueVisibilityChanged});
 
   @override
   State<GuiltMeter> createState() => _GuiltMeter();
@@ -53,6 +54,7 @@ class _GuiltMeter extends State<GuiltMeter> {
                   guiltValue = 0;
                 }
               });
+              widget.onValueVisibilityChanged(guiltValue);
             }
         ),
 

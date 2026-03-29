@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'home_page.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -12,7 +11,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  //controllers
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -28,21 +26,18 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
-      // 🔐 Create user
       UserCredential userCredential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // 👤 Save name in FirebaseAuth
       await userCredential.user!.updateDisplayName(
         _nameController.text,
       );
 
       await userCredential.user!.reload();
 
-      // ☁️ Save user data in Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
@@ -54,7 +49,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (!mounted) return;
 
-      // ✅ Success → go back (LoginStatusPage will handle navigation)
       Navigator.pop(context);
       return;
 
@@ -244,7 +238,6 @@ class _RegisterPageState extends State<RegisterPage> {
               Divider(),
               SizedBox(height: 15),
 
-              // Back to Login Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
