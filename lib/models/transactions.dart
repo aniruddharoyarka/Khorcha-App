@@ -10,6 +10,7 @@ class TransactionModel {
   final String category;
   final TransactionType type;
   final String? note;
+  final double guiltValue;
 
   //Subscription
   final bool isSubscription;
@@ -23,6 +24,7 @@ class TransactionModel {
     required this.date,
     required this.category,
     required this.type,
+    required this.guiltValue,
     this.note,
     this.isSubscription = false,
     this.billingCycle,

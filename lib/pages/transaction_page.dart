@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khorcha/widgets/guilt_meter.dart';
 
 class TransactionPage extends StatefulWidget {
   const TransactionPage({super.key});
@@ -256,6 +257,8 @@ class _TransactionPageState extends State<TransactionPage> {
                     onChanged: (val) => _billingCycle = int.tryParse(val) ?? 1,
                   ),
                 ),
+
+              if(_selectedType == 'Expense') GuiltMeter(),
 
               SizedBox(height: 40),
 
