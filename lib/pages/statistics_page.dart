@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:khorcha/widgets/expense_pie_chart.dart';
-import 'package:khorcha/widgets/line_graph.dart';
 import 'package:khorcha/models/transactions.dart';
 import 'package:khorcha/widgets/monthly_summary_card.dart';
 
@@ -12,122 +11,137 @@ class StatisticsPage extends StatefulWidget {
     State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
+List<TransactionModel> getLastMonthTransactions(List<TransactionModel> transactions){
+  DateTime now = DateTime.now();
+  DateTime lastMonth = DateTime(now.year, now.month-1);
+
+  return transactions.where((t) => t.date.month == lastMonth.month && t.date.year == lastMonth.year).toList();
+}
+
+double _calculateGuiltPercentage(List<TransactionModel> transactions){
+  if (transactions.isEmpty) return 0;
+  double total = 0;
+
+  for(var t in transactions){
+    total += t.guiltValue;
+  }
+  return total / transactions.length;
+}
+
+String guiltMessage(double value){
+  if(value > 0){
+    return "You were ${value.toStringAsFixed(0)}% happy with your spending last month";
+  } else if (value < 0){
+    return "You were ${value.abs().toStringAsFixed(0)}% sad with your spending last month";
+  }
+  return "You were neutral with your spending last month";
+}
+
+
 class _StatisticsPageState extends State<StatisticsPage>{
-  String _selectedPeriod = "Month";
-
-  List<TransactionModel> get _filteredTransactions {
-    DateTime now = DateTime.now();
-    DateTime cutoffDate;
-
-    switch(_selectedPeriod){
-      case "Month":
-        cutoffDate = now.subtract(const Duration(days: 30));
-        break;
-      case "Year":
-        cutoffDate = now.subtract(const Duration(days: 365));
-        break;
-      default:
-        cutoffDate = now.subtract(const Duration(days: 30));
-    }
-    return widget.transactions.where((tx) => tx.date.isAfter(cutoffDate)).toList();
-  }
-
-  void _showPeriodSelector(){
-    showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25))
-        ),
-        builder: (context) {
-          return Padding(
-              padding: const EdgeInsets.all(25),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 10),
-                    Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Select Period',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    ListTile(
-                      title: Text('Month', style: TextStyle(fontSize: 16),),
-                      onTap: (){
-                        setState(() {
-                          _selectedPeriod = "Month";
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: Colors.black26),
-                    ListTile(
-                      title: Text('Year', style: TextStyle(fontSize: 16),),
-                      onTap: (){
-                        setState(() {
-                          _selectedPeriod = "Year";
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                  ]
-              )
-          );
-        }
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    String highestExpenseTitle = "";
+    double highestExpenseAmount = 0;
+    String highestIncomeTitle = "";
+    double highestIncomeAmount = 0;
+
+    final lastMonthTransactions = getLastMonthTransactions(widget.transactions);
+    double guiltPercentage = _calculateGuiltPercentage(lastMonthTransactions);
+
+    for(var t in widget.transactions){
+      if(t.type == TransactionType.expense){
+        if(t.amount > highestExpenseAmount){
+          highestExpenseAmount = t.amount;
+          highestExpenseTitle = t.title;
+        }
+      }
+    }
+
+    for(var t in widget.transactions){
+      if(t.type == TransactionType.income){
+        if(t.amount > highestIncomeAmount){
+          highestIncomeAmount = t.amount;
+          highestIncomeTitle = t.title;
+        }
+      }
+    }
+
     return Scaffold(
-        backgroundColor: const Color(0xFFF9FFFC),
+        backgroundColor: Color(0xFFF9FFFC),
         appBar: AppBar(
-          title: Text("Statistics",
-            style: TextStyle(fontWeight: FontWeight.normal),
-          ),
+          title: Text("Statistics",),
           centerTitle: true,
         ),
         body: SafeArea(
           child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 20),
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.only(bottom: 20),
               children: [
-                //Line Graph
-                  Container(
-                    height: 288,
-                    margin: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: const LinearGradient(
-                        colors: [Color(0x33F5FFFC), Color(0x3300987B),],
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: LineGraph(
-                          transactions: _filteredTransactions,
-                          periodText: _selectedPeriod,
-                          onPeriodTap: _showPeriodSelector,
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 10),
-
                 MonthlySummaryCard(transactions: widget.transactions),
-
-                const SizedBox(height: 10),
 
                 ExpensePieChart(transactions: widget.transactions),
 
+                Row(
+                  children: [
+                    //Highest Expense
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 15, right: 7),
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF0F5F3),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          children: [
+                            Text('Highest Expense',
+                                style: TextStyle(fontWeight: FontWeight.w300, fontSize: 12)),
+                            SizedBox(height: 5),
+                            Text(highestExpenseTitle,
+                                style: TextStyle(fontWeight: FontWeight.w600,fontSize: 14)),
+                            Text("৳${highestExpenseAmount.toStringAsFixed(0)}",
+                                style: TextStyle(fontWeight: FontWeight.w600,fontSize: 14)),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    //Highest Income
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 7, right: 15),
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF0F5F3),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          children: [
+                            Text('Highest Income',
+                                style: TextStyle(fontWeight: FontWeight.w300,fontSize: 12)),
+                            SizedBox(height: 5),
+                            Text(highestIncomeTitle,
+                                style: TextStyle(fontWeight: FontWeight.w600,fontSize: 14)),
+                            Text("৳${highestIncomeAmount.toStringAsFixed(0)}",
+                                style: TextStyle(fontWeight: FontWeight.w600,fontSize: 14)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10,),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 15),
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF0F5F3),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child:
+                    Text(guiltMessage(guiltPercentage), textAlign: TextAlign.center),
+                  ),
               ]
           ),
         )

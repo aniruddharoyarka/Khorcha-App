@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
-class BalanceCard extends StatelessWidget {
+class BalanceCard extends StatefulWidget {
   final VoidCallback onAddPressed;
   final double totalExpense;
-  const BalanceCard({
-    super.key,
-    required this.onAddPressed,
-    required this.totalExpense,
+  const BalanceCard({super.key, required this.onAddPressed, required this.totalExpense,
   });
 
+  @override
+  State<BalanceCard> createState() => _BalanceCardState();
+}
+
+class _BalanceCardState extends State<BalanceCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -32,7 +34,7 @@ class BalanceCard extends StatelessWidget {
                 children: [
                   Text("Total Expense", style: TextStyle(fontSize: 15)),
                   Text(
-                    "৳${totalExpense.toStringAsFixed(2)}",
+                    "৳${widget.totalExpense.toStringAsFixed(2)}",
                     style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
@@ -41,7 +43,7 @@ class BalanceCard extends StatelessWidget {
                 ],
               ),
               ElevatedButton(
-                onPressed: onAddPressed,
+                onPressed: widget.onAddPressed,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.white, shape: const CircleBorder(), padding: const EdgeInsets.all(10)),
                 child: Icon(Icons.add, size: 30, color: Color(0xFF03624C)),
               ),

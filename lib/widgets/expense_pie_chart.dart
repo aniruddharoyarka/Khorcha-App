@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:khorcha/models/transactions.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -11,51 +9,45 @@ class ExpensePieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allExpenses = transactions.where((t) =>
-    t.type == TransactionType.expense).toList();
-    final totalExpense = allExpenses.fold(0.0, (sum, t) => sum + t.amount);
-    final Map<String, double> categoryAmounts = {};
+    final allExpenses = transactions.where((t) => t.type == TransactionType.expense).toList();
 
+    double totalExpense = 0;
+    for (var expense in allExpenses) {
+      totalExpense += expense.amount;
+    }
+
+    Map<String, double> categoryAmounts = {};
     for (int i = 0; i < allExpenses.length; i++) {
-      var transaction = allExpenses[i];
-      categoryAmounts[transaction.category] =
-          (categoryAmounts[transaction.category] ?? 0) + transaction.amount;
+      String category = allExpenses[i].category;
+      double amount = allExpenses[i].amount;
+
+      if (categoryAmounts[category] == null) {
+        categoryAmounts[category] = amount;
+      } else {
+        categoryAmounts[category] = categoryAmounts[category]! + amount;
+      }
     }
 
     final List<Color> pieColors = [
-      const Color(0xFF64B5F6), // Soft Blue
-      const Color(0xFF81C784), // Soft Green
-      const Color(0xFFFFB74D), // Soft Orange
-      const Color(0xFFE57373), // Soft Red
-      const Color(0xFFBA68C8), // Soft Purple
-      const Color(0xFF4FC3F7), // Light Blue
-      const Color(0xFFAED581),
-      const Color(0xFFFF8A65),
+       Color(0xFF64B5F6), Color(0xFF81C784), Color(0xFFFFB74D), Color(0xFFE57373),
+       Color(0xFFBA68C8), Color(0xFF4FC3F7), Color(0xFFAED581), Color(0xFFFF8A65),
     ];
+
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.only(right: 20, left: 20, bottom: 15),
       child: Container(
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0x33F5FFFC), Color(0x3300987B),],
-            ),
+            color: Color(0xFFF0F5F3),
             borderRadius: BorderRadius.circular(15)
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-              Text(
-                'Expenses',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Category wise',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
-              ),
-            const SizedBox(height: 20),
+              Text('Expenses', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+              Text('Category wise', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w300),),
+             SizedBox(height: 8),
 
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,11 +56,11 @@ class ExpensePieChart extends StatelessWidget {
                   flex: 4,
                   //PieChart
                   child: SizedBox(
-                    height: 180,
+                    height: 200,
                     child: PieChart(
                       PieChartData(
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 50,
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 30,
                         sections: List.generate(
                             categoryAmounts.length, (index) {
                           final category = categoryAmounts.keys.elementAt(
@@ -77,7 +69,7 @@ class ExpensePieChart extends StatelessWidget {
                           return PieChartSectionData(
                             value: amount,
                             color: pieColors[index % pieColors.length],
-                            radius: 25,
+                            radius: 40,
                             title: '',
                           );
                         }),
@@ -85,7 +77,7 @@ class ExpensePieChart extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 30),
+                SizedBox(width: 20),
 
                 //Category List
                 Expanded(
@@ -94,32 +86,27 @@ class ExpensePieChart extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: categoryAmounts.entries.map((entry) {
-                      final index = categoryAmounts.keys.toList().indexOf(entry
-                          .key);
+                      final index = categoryAmounts.keys.toList().indexOf(entry.key);
                       final percentage = (entry.value / totalExpense) * 100;
 
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: 8),
                         child: Row(
                           children: [
                             Container(
-                              width: 10,
-                              height: 10,
+                              width: 8,
+                              height: 8,
                               decoration: BoxDecoration(
                                 color: pieColors[index % pieColors.length],
-                                shape: BoxShape.circle,
+                                shape: BoxShape.rectangle,
                               ),
                             ),
-                            const SizedBox(width: 5),
+                            SizedBox(width: 5),
                             Expanded(
-                              child: Text(
-                                entry.key, style: TextStyle(fontSize: 14),
-                              ),
+                              child: Text(entry.key, style: TextStyle(fontSize: 10),),
                             ),
-                            Text(
-                              '${percentage.toStringAsFixed(1)}%',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                            Text('${percentage.toStringAsFixed(1)}%',
+                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),

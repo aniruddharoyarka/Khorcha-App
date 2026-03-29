@@ -8,19 +8,16 @@ class RecentTransactionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine color based on the Enum type
     final Color amountColor = transaction.type == TransactionType.income
         ? const Color(0xFF03624C)
         : Colors.red;
 
-    // Determine the sign (+ or -)
     final String sign = transaction.type == TransactionType.income ? "+" : "-";
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () => _showTransactionDetails(context, transaction),
-        //borderRadius: BorderRadius.circular(15),
         child: Container(
           height: 80,
           margin: EdgeInsets.only(bottom: 10),
@@ -30,7 +27,6 @@ class RecentTransactionsCard extends StatelessWidget {
           ),
           child: Center(
             child: ListTile(
-              // Use a default icon if you haven't added specific icons to the new model yet
               leading: Icon(Icons.receipt_long, color: Color(0xFF03624C)),
               title: Text(
                 transaction.title,
@@ -43,7 +39,7 @@ class RecentTransactionsCard extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 16,
-                  color: amountColor, // Now uses the logic above
+                  color: amountColor,
                 ),
               ),
             ),
@@ -64,7 +60,7 @@ void _showTransactionDetails(BuildContext context, TransactionModel tx) {
       return Padding(
         padding: EdgeInsets.all(25),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Sheet only takes needed space
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10))),
             SizedBox(height: 20),
@@ -72,7 +68,6 @@ void _showTransactionDetails(BuildContext context, TransactionModel tx) {
             Text(tx.category, style: TextStyle(color: Colors.grey[600])),
             Divider(height: 30),
 
-            // Amount and Date Info
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -100,14 +95,12 @@ void _showTransactionDetails(BuildContext context, TransactionModel tx) {
 
             SizedBox(height: 30),
 
-            // Delete Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // Logic to delete will go here (connect to your database later)
                   print("Deleting transaction: ${tx.id}");
-                  Navigator.pop(context); // Close sheet
+                  Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Transaction deleted"), backgroundColor: Colors.red),
                   );

@@ -1,10 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:khorcha/pages/register_page.dart';
 
+import 'forget_password_page.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
-   const LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -13,6 +15,77 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  Future signIn() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // 👇 Added: Early Validation before calling Firebase
+    if (email.isEmpty && password.isEmpty) {
+      _showErrorSnackBar("Please enter your email and password.");
+      return;
+    } else if (email.isEmpty) {
+      _showErrorSnackBar("Please enter your email.");
+      return;
+    } else if (password.isEmpty) {
+      _showErrorSnackBar("Please enter your password.");
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Note: If you want to navigate to HomePage on success,
+      // you should do it here! For example:
+      // if (mounted) {
+      //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+      // }
+
+    } on FirebaseAuthException catch (e) {
+      String message = "Login failed";
+
+      if (e.code == 'invalid-credential') {
+        message = "Email or password is incorrect";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email format";
+      } else {
+        message = e.message ?? "Something went wrong";
+      }
+
+      if (!mounted) return;
+      _showErrorSnackBar(message);
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  // Helper method to keep your code clean and avoid repeating the SnackBar code
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -40,9 +113,11 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 5),
-              Text("To sign in to an account in the application, enter your email and password",
+              Text(
+                "To sign in to an account in the application, enter your email and password",
                 style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,),
+                textAlign: TextAlign.center,
+              ),
 
               SizedBox(height: 25),
 
@@ -82,36 +157,44 @@ class _LoginPageState extends State<LoginPage> {
               GestureDetector(
                 onTap: () {
                   print("Forget Password Clicked");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ForgetPasswordPage()),
+                  );
                 },
-                child: Text("Forget Password?",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF03624C),
-                  ),
+                child: Text(
+                  "Forget Password?",
+                  style: TextStyle(fontSize: 14, color: Color(0xFF03624C)),
                 ),
               ),
 
               SizedBox(height: 15),
 
-              SizedBox(
+              Container(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    print("Email: ${_emailController.text}");
-                    print("Password: ${_passwordController.text}");
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                    await signIn();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03624C),
-                    padding:  EdgeInsets.symmetric(vertical: 15),
+                    padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child:  Text(
+                  child: _isLoading
+                      ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : Text(
                     "Login",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
@@ -126,19 +209,19 @@ class _LoginPageState extends State<LoginPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => RegisterPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    padding:  EdgeInsets.symmetric(vertical: 15),
+                    padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child:  Text(
+                  child: Text(
                     "Create an Account",
                     style: TextStyle(color: Color(0xFF03624C), fontSize: 16),
                   ),

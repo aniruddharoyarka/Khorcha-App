@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
-import 'login_page.dart'; // Import this so we can navigate back
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,6 +17,91 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  Future signUp() async {
+    if (!passwordConfirmed()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // 🔐 Create user
+      UserCredential userCredential =
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // 👤 Save name in FirebaseAuth
+      await userCredential.user!.updateDisplayName(
+        _nameController.text,
+      );
+
+      await userCredential.user!.reload();
+
+      // ☁️ Save user data in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+        'name': _nameController.text,
+        'email': _emailController.text.trim(),
+        'createdAt': Timestamp.now(),
+      });
+
+      if (!mounted) return;
+
+      // ✅ Success → go back (LoginStatusPage will handle navigation)
+      Navigator.pop(context);
+      return;
+
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      String message = "Registration failed";
+
+      if (e.code == 'email-already-in-use') {
+        message = "Email already in use";
+      } else if (e.code == 'weak-password') {
+        message = "Password should be at least 6 characters";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email format";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } catch (e) {
+      print("ERROR: $e");
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  bool passwordConfirmed() {
+    if (_passwordController.text.trim() ==
+        _confirmPasswordController.text.trim()) {
+      return true;
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Passwords do not match")));
+      return false;
+    }
+  }
 
   @override
   void dispose() {
@@ -55,7 +142,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person_outline),
-                  hintText: 'Full Name',
+                  hintText: 'Display Name',
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -124,21 +211,12 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    print("Name: ${_nameController.text}");
-                    print("Email: ${_emailController.text}");
-
-                    // Simple check if passwords match
-                    if (_passwordController.text ==
-                        _confirmPasswordController.text) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    } else {
-                      print("Passwords do not match");
-                    }
+                  onPressed: _isLoading
+                      ? null
+                      : () {
+                    signUp();
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03624C),
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -146,7 +224,16 @@ class _RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: _isLoading
+                      ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : Text(
                     "Register",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),

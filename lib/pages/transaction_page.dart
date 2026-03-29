@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khorcha/widgets/guilt_meter.dart';
 
 class TransactionPage extends StatefulWidget {
   const TransactionPage({super.key});
@@ -10,7 +11,6 @@ class TransactionPage extends StatefulWidget {
 class _TransactionPageState extends State<TransactionPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Controllers to capture user input
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
@@ -20,7 +20,6 @@ class _TransactionPageState extends State<TransactionPage> {
   String? _selectedCategory;
   DateTime? _selectedDate = DateTime.now();
 
-  // Subscription Logic Variables
   bool _isSubscription = false;
   int _billingCycle = 1;
 
@@ -67,10 +66,10 @@ class _TransactionPageState extends State<TransactionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FFFC),
+      backgroundColor: Color(0xFFF9FFFC),
       appBar: AppBar(
         foregroundColor: Colors.white,
-        title: const Text(
+        title: Text(
           'Add Transaction',
           style: TextStyle(fontWeight: FontWeight.normal),
         ),
@@ -81,17 +80,16 @@ class _TransactionPageState extends State<TransactionPage> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
-              // 1. Title Input (Important for Subscription names like "Spotify")
               _buildInputField(
                 label: "Title",
                 child: TextFormField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "e.g. Spotify",
                     border: InputBorder.none,
                   ),
@@ -99,7 +97,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 2. Type Dropdown
+              // type dropdown
               _buildInputField(
                 label: "Type",
                 child: DropdownButtonFormField<String>(
@@ -109,18 +107,17 @@ class _TransactionPageState extends State<TransactionPage> {
                       .toList(),
                   onChanged: (val) => setState(() {
                     _selectedType = val;
-                    _selectedCategory = null; // Reset category when type changes
-                    if (val == 'Income')
-                      _isSubscription = false; // Subscriptions are usually expenses
+                    _selectedCategory = null; // resets category when type changes
+                    if (val == 'Income') _isSubscription = false; // subscriptions are expenses
                   }),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Select Type",
                   ),
                 ),
               ),
 
-              // 3. Date Picker
+              //  date picker
               _buildInputField(
                 label: "Date",
                 child: GestureDetector(
@@ -134,7 +131,7 @@ class _TransactionPageState extends State<TransactionPage> {
                            "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.calendar_today,
                         size: 20,
                         color: Color(0xFF03624C),
@@ -144,13 +141,13 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 4. Category Dropdown
+              // category dropdown
               _buildInputField(
                 label: "Category",
                 child: _isAddingCategory ? Row(children: [
                   Expanded(child: TextField(
                 controller: _newCategoryController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Enter category name",
                     border: InputBorder.none,
                   ),
@@ -182,7 +179,7 @@ class _TransactionPageState extends State<TransactionPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Add a new category'),
-                          const Icon(
+                          Icon(
                             Icons.add,
                             size: 20,
                             color: Color(0xFF03624C),
@@ -202,7 +199,7 @@ class _TransactionPageState extends State<TransactionPage> {
                       });
                     }
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Select Category",
                   ),
@@ -210,13 +207,13 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 5. Amount Input
+              // amount Input
               _buildInputField(
                 label: "Amount",
                 child: TextFormField(
                   controller: _amountController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     prefixText: "৳ ",
                     border: InputBorder.none,
                   ),
@@ -224,13 +221,13 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
 
-              // 6. Subscription Toggle (Only for Expenses)
+              //subscription toggle
               if (_selectedType == 'Expense') ...[
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       "Mark as Subscription",
                       style: TextStyle(
                         fontSize: 16,
@@ -239,21 +236,21 @@ class _TransactionPageState extends State<TransactionPage> {
                     ),
                     Switch(
                       value: _isSubscription,
-                      activeColor: const Color(0xFF03624C),
+                      activeColor: Color(0xFF03624C),
                       onChanged: (val) => setState(() => _isSubscription = val),
                     ),
                   ],
                 ),
               ],
 
-              // 7. Conditional Billing Cycle
+              // billing cycle
               if (_isSubscription && _selectedType == 'Expense')
                 _buildInputField(
                   label: "Every",
                   child: TextFormField(
                     initialValue: '1',
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       suffixText: "Months",
                       border: InputBorder.none,
                     ),
@@ -261,27 +258,29 @@ class _TransactionPageState extends State<TransactionPage> {
                   ),
                 ),
 
-              const SizedBox(height: 40),
+              if(_selectedType == 'Expense') GuiltMeter(),
 
-              // Save Button
+              SizedBox(height: 40),
+
+              // save button
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
                   onPressed: _handleSave,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF03624C),
+                    backgroundColor: Color(0xFF03624C),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Save Transaction",
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -289,25 +288,25 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  // Helper to keep the UI consistent and code shorter
+
   Widget _buildInputField({required String label, required Widget child}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
+      padding: EdgeInsets.only(bottom: 15),
       child: Row(
         children: [
           SizedBox(
             width: 85,
             child: Text(
               label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0F5F3),
+                color: Color(0xFFF0F5F3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: child,
@@ -320,7 +319,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   void _handleSave() {
     if (_formKey.currentState!.validate() && _selectedDate != null) {
-      // Logic to calculate next payment
+      // logic for next payment
       DateTime? nextPaymentDate;
       if (_isSubscription) {
         nextPaymentDate = DateTime(
@@ -337,7 +336,7 @@ class _TransactionPageState extends State<TransactionPage> {
     } else if (_selectedDate == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Please select a date")));
+      ).showSnackBar(SnackBar(content: Text("Please select a date")));
     }
   }
 }

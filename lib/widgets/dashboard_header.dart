@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class DashboardHeader extends StatelessWidget {
+class DashboardHeader extends StatefulWidget {
   final String name;
   final VoidCallback onProfilePressed;
   final VoidCallback onStatisticsPressed;
@@ -13,6 +15,14 @@ class DashboardHeader extends StatelessWidget {
   });
 
   @override
+  State<DashboardHeader> createState() => _DashboardHeaderState();
+}
+
+class _DashboardHeaderState extends State<DashboardHeader> {
+
+  final user = FirebaseAuth.instance.currentUser;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 25),
@@ -22,16 +32,31 @@ class DashboardHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Welcome,", style: TextStyle(fontSize: 25)),
-              Text(
-                name,
-                style: TextStyle(fontSize: 25, height: 1.1, fontWeight: FontWeight.bold),
+              Text("Welcome", style: TextStyle(fontSize: 25)),
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user!.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Text("Loading...");
+                  }
+
+                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+
+                  final name = data?['name'] ?? "User";
+
+                  return Text(
+                    name,
+                    style: TextStyle(fontSize: 25, height: 1.1, fontWeight: FontWeight.bold),
+                  );
+                },
               ),
             ],
           ),
-          // Updated Profile Button
           GestureDetector(
-            onTap: onProfilePressed,
+            onTap: widget.onProfilePressed,
             child: CircleAvatar(
               radius: 22,
               backgroundColor: Color(0xFF03624C),
