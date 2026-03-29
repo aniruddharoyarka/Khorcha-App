@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     TransactionModel(id: '4', title: "Salary", amount: 15000.0, date: DateTime.now().subtract(Duration(days: 28)), category: "Work", type: TransactionType.income, guiltValue: 85),
     TransactionModel(id: '5', title: "Rent", amount: 5000.0, date: DateTime.now().subtract(Duration(days: 20)), category: "Housing", type: TransactionType.expense, guiltValue: 0),
     TransactionModel(id: '6', title: "Electricity Bill", amount: 3000.0, date: DateTime.now().subtract(Duration(days: 18)), category: "Utilities", type: TransactionType.expense, guiltValue: -20),
-    TransactionModel(id: '7', title: "Internet", amount: 500.0, date: DateTime.now().subtract(Duration(days: 16)), category: "Utilities", type: TransactionType.expense, isSubscription: true, guiltValue: -30),
+    TransactionModel(id: '7', title: "Internet", amount: 500.0, date: DateTime.now().subtract(Duration(days: 16)), category: "Utilities", type: TransactionType.expense, isSubscription: true, guiltValue: -100),
   ];
 
   void _navigateToTransactionPage() {
