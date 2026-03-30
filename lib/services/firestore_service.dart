@@ -7,7 +7,7 @@ class FirestoreService {
 
   String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
-  // ✅ Add Transaction
+  //add tx
   Future<void> addTransaction(TransactionModel tx) async {
     if (userId == null) return;
 
@@ -18,7 +18,7 @@ class FirestoreService {
         .add(tx.toMap());
   }
 
-  // ✅ Get Transactions
+  //fetch tx
   Stream<List<TransactionModel>> getTransactions() {
     if (userId == null) return const Stream.empty();
 

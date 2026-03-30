@@ -140,9 +140,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => UpcomingPaymentsPage(
-                    payments: widget.allTransactions
-                        .where((t) => t.isSubscription)
-                        .toList(),
+                    payments: widget.allTransactions.where((t) => t.isSubscription).toList(),
                   ),
                 ),
               );
@@ -154,7 +152,7 @@ class _DashboardPageState extends State<DashboardPage> {
           upcomingPayments.isEmpty
               ? _buildEmptyState("No upcoming payments found")
               : SizedBox(
-            height: 83,
+            height: 95,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 20),

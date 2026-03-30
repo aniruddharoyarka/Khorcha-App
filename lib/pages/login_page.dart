@@ -22,7 +22,6 @@ class _LoginPageState extends State<LoginPage> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    // 👇 Added: Early Validation before calling Firebase
     if (email.isEmpty && password.isEmpty) {
       _showErrorSnackBar("Please enter your email and password.");
       return;
@@ -44,8 +43,6 @@ class _LoginPageState extends State<LoginPage> {
         password: password,
       );
 
-      // Note: If you want to navigate to HomePage on success,
-      // you should do it here! For example:
       // if (mounted) {
       //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
       // }
@@ -72,7 +69,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // Helper method to keep your code clean and avoid repeating the SnackBar code
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

@@ -30,7 +30,6 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         SnackBar(content: Text("Password reset email sent successfully")),
       );
 
-      // Optional: go back to login page
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       String message = "Failed to send reset email";

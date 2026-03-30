@@ -160,8 +160,8 @@ class _TransactionPageState extends State<TransactionPage> {
                       .toList(),
                   onChanged: (val) => setState(() {
                     _selectedType = val;
-                    _selectedCategory = null; // resets category when type changes
-                    if (val == 'Income') _isSubscription = false; // subscriptions are expenses
+                    _selectedCategory = null;
+                    if (val == 'Income') _isSubscription = false;
                   }),
                   decoration: InputDecoration(
                     border: InputBorder.none,

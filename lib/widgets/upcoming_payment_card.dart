@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khorcha/models/transactions.dart';
 
 class UpcomingPaymentCard extends StatelessWidget {
-  final TransactionModel payment; // Changed to TransactionModel
+  final TransactionModel payment;
 
   const UpcomingPaymentCard({super.key, required this.payment});
 
@@ -12,10 +12,10 @@ class UpcomingPaymentCard extends StatelessWidget {
       onTap: () => _showTransactionDetails(context, payment),
         child: Container(
           width: 180,
-          margin:  EdgeInsets.only(right: 15),
+          margin:  EdgeInsets.only(right: 10),
           padding:  EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Color(0xFF03624C), // Use a theme color
+            color: Color(0xFF03624C),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
@@ -40,6 +40,16 @@ class UpcomingPaymentCard extends StatelessWidget {
                       "৳${payment.amount.toStringAsFixed(0)}",
                       style:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                     ),
+                    Text(
+                      "Due on: ${payment.nextPaymentDate!.day}/${payment.nextPaymentDate!.month}",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+
+
                   ],
                 ),
               ),
@@ -53,67 +63,103 @@ class UpcomingPaymentCard extends StatelessWidget {
 void _showTransactionDetails(BuildContext context, TransactionModel tx) {
   showModalBottomSheet(
     context: context,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
     ),
     builder: (context) {
       return Padding(
-        padding:  EdgeInsets.all(25),
+        padding: const EdgeInsets.all(25),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Sheet only takes needed space
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10))),
-             SizedBox(height: 20),
-            Text(tx.title, style:  TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10)
+                )
+            ),
+            const SizedBox(height: 20),
+            Text(tx.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             Text(tx.category, style: TextStyle(color: Colors.grey[600])),
-             Divider(height: 30),
+            const Divider(height: 30),
 
-            // Amount and Date Info
+            // Amount Info
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Text("Amount", style: TextStyle(fontSize: 16)),
+                const Text("Amount", style: TextStyle(fontSize: 16)),
                 Text(
                   "${tx.type == TransactionType.income ? '+' : '-'} ৳${tx.amount}",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
-                      color: tx.type == TransactionType.income ?  Color(0xFF03624C) : Colors.red),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: tx.type == TransactionType.income ? const Color(0xFF03624C) : Colors.red
+                  ),
                 ),
               ],
             ),
-             SizedBox(height: 10),
+            const SizedBox(height: 10),
+
+
+            if (tx.isSubscription && tx.nextPaymentDate != null) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Due Date", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.orange)),
+                  Text(
+                    "${tx.nextPaymentDate!.day}/${tx.nextPaymentDate!.month}/${tx.nextPaymentDate!.year}",
+                    style:  TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
+
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Text("Date", style: TextStyle(fontSize: 16)),
+                const Text("Date Created", style: TextStyle(fontSize: 16)),
                 Text("${tx.date.day}/${tx.date.month}/${tx.date.year}"),
               ],
             ),
 
             if (tx.isSubscription) ...[
-               SizedBox(height: 10),
-               Chip(label: Text("Subscription"), backgroundColor: Color(0x2203624C)),
+              const SizedBox(height: 15),
+              const Align(
+                alignment: Alignment.center,
+                child: Chip(
+                  label: Text("Subscription", style: TextStyle(color: Color(0xFF03624C))),
+                  backgroundColor: Color(0x2203624C),
+                ),
+              ),
             ],
 
-             SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             // Delete Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // Logic to delete will go here (connect to your database later)
-                  print("Deleting transaction: ${tx.id}");
-                  Navigator.pop(context); // Close sheet
+                  //delete logic
+                  Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content: Text("Transaction deleted"), backgroundColor: Colors.red),
+                    const SnackBar(content: Text("Transaction deleted"), backgroundColor: Colors.red),
                   );
                 },
-                icon:  Icon(Icons.delete_outline, color: Colors.white),
-                label:  Text("Delete Transaction", style: TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red, padding:  EdgeInsets.symmetric(vertical: 15)),
+                icon: const Icon(Icons.delete_outline, color: Colors.white),
+                label: const Text("Delete Transaction", style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               ),
             ),
-             SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       );

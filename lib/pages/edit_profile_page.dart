@@ -101,13 +101,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() => _isLoading = true);
 
     try {
-      // 1. Update Display Name in Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .set({'name': newName}, SetOptions(merge: true));
 
-      // 2. Update Password in Firebase Auth (if requested)
       if (isChangingPassword && user.email != null) {
         final credential = EmailAuthProvider.credential(
           email: user.email!,
@@ -206,10 +204,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: emailController,
               label: "Email",
               icon: Icons.email,
-              enabled: false, // Permanently locked
+              enabled: false,
             ),
-
-
 
             SizedBox(height: 30),
             Text(
