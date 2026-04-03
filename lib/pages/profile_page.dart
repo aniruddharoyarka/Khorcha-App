@@ -447,11 +447,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                         Color(0xFF03624C)),
                                     onPressed: () async {
                                       Navigator.pop(context);
-                                      await FirebaseAuth.instance
-                                          .signOut();
+                                      await FirebaseAuth.instance.signOut();
+
                                       if (context.mounted) {
                                         Navigator.pop(context);
                                       }
+
+
                                     },
                                     child: Text("Logout",
                                         style: TextStyle(

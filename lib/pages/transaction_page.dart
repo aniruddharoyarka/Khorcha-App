@@ -12,7 +12,6 @@ class TransactionPage extends StatefulWidget {
 }
 
 class _TransactionPageState extends State<TransactionPage> {
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _titleController = TextEditingController();
@@ -30,8 +29,26 @@ class _TransactionPageState extends State<TransactionPage> {
   bool _isAddingCategory = false;
 
   final List<String> _types = ['Income', 'Expense'];
-  final List<String> _incomeCategories = ['Salary', 'Business', 'Investments', 'Gifts', 'Rental', 'Other'];
-  final List<String> _expenseCategories = ['Food', 'Housing', 'Transport', 'Health', 'Travel', 'Shopping', 'Entertainment', 'Education', 'Finance', 'Miscellaneous'];
+  final List<String> _incomeCategories = [
+    'Salary',
+    'Business',
+    'Investments',
+    'Gifts',
+    'Rental',
+    'Other',
+  ];
+  final List<String> _expenseCategories = [
+    'Food',
+    'Housing',
+    'Transport',
+    'Health',
+    'Travel',
+    'Shopping',
+    'Entertainment',
+    'Education',
+    'Finance',
+    'Miscellaneous',
+  ];
 
   void _showDatePicker() {
     showDatePicker(
@@ -48,9 +65,11 @@ class _TransactionPageState extends State<TransactionPage> {
 
   void _saveNewCategory() {
     String newCategory = _newCategoryController.text.trim();
-    if(newCategory.isNotEmpty) {
+    if (newCategory.isNotEmpty) {
       setState(() {
-        _selectedType == 'Income' ? _incomeCategories.add(newCategory) : _expenseCategories.add(newCategory);
+        _selectedType == 'Income'
+            ? _incomeCategories.add(newCategory)
+            : _expenseCategories.add(newCategory);
         _selectedCategory = newCategory;
         _isAddingCategory = false;
         _newCategoryController.clear();
@@ -91,7 +110,9 @@ class _TransactionPageState extends State<TransactionPage> {
           amount: double.parse(_amountController.text.trim()),
           date: _selectedDate!,
           category: _selectedCategory!,
-          type: _selectedType == 'Income' ? TransactionType.income : TransactionType.expense,
+          type: _selectedType == 'Income'
+              ? TransactionType.income
+              : TransactionType.expense,
           guiltValue: guiltValue,
           note: _noteController.text.trim(),
           isSubscription: _isSubscription,
@@ -102,8 +123,12 @@ class _TransactionPageState extends State<TransactionPage> {
 
       Navigator.pop(context);
     } else if (_selectedDate == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Please select a date")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+          SnackBar(content: Text("Please select a date"),
+            behavior: SnackBarBehavior.floating,
+          ));
     }
   }
 
@@ -181,7 +206,7 @@ class _TransactionPageState extends State<TransactionPage> {
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 15),
                         child: Text(
-                           "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"
+                          "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}",
                         ),
                       ),
                       Icon(
@@ -197,67 +222,78 @@ class _TransactionPageState extends State<TransactionPage> {
               // category dropdown
               _buildInputField(
                 label: "Category",
-                child: _isAddingCategory ? Row(children: [
-                  Expanded(child: TextField(
-                controller: _newCategoryController,
-                  decoration: InputDecoration(
-                    hintText: "Enter category name",
-                    border: InputBorder.none,
-                  ),
-                  onSubmitted: (_) => _saveNewCategory(),
-                  )),
-                IconButton(
-                  icon: Icon(Icons.check, color: Color(0xFF03624C)),
-                    onPressed: _saveNewCategory,
-                  ),
-                  IconButton(
-                      icon: Icon(Icons.close, color: Color(0xFF03624C)),
-                      onPressed: () {
-                        setState((){
-                          _isAddingCategory = false;
-                          _newCategoryController.clear();
-                        });
-                      }),
-                ]) : DropdownButtonFormField<String>(
-                  value: _selectedCategory,
-                  items:[
-                    ...(_selectedType == 'Income'
-                        ? _incomeCategories
-                        : _expenseCategories)
-                        .map((c) => DropdownMenuItem(value: c, child: Text(c),))
-                        .toList(),
-                    DropdownMenuItem<String>(
-                      value: '_add_',
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: _isAddingCategory
+                    ? Row(
                         children: [
-                          Text('Add a new category'),
-                          Icon(
-                            Icons.add,
-                            size: 20,
-                            color: Color(0xFF03624C),
+                          Expanded(
+                            child: TextField(
+                              controller: _newCategoryController,
+                              decoration: InputDecoration(
+                                hintText: "Enter category name",
+                                border: InputBorder.none,
+                              ),
+                              onSubmitted: (_) => _saveNewCategory(),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.check, color: Color(0xFF03624C)),
+                            onPressed: _saveNewCategory,
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close, color: Color(0xFF03624C)),
+                            onPressed: () {
+                              setState(() {
+                                _isAddingCategory = false;
+                                _newCategoryController.clear();
+                              });
+                            },
                           ),
                         ],
+                      )
+                    : DropdownButtonFormField<String>(
+                        value: _selectedCategory,
+                        items: [
+                          ...(_selectedType == 'Income'
+                                  ? _incomeCategories
+                                  : _expenseCategories)
+                              .map(
+                                (c) =>
+                                    DropdownMenuItem(value: c, child: Text(c)),
+                              )
+                              .toList(),
+                          DropdownMenuItem<String>(
+                            value: '_add_',
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Add a new category'),
+                                Icon(
+                                  Icons.add,
+                                  size: 20,
+                                  color: Color(0xFF03624C),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        onChanged: (val) {
+                          if (val == '_add_') {
+                            setState(() {
+                              _isAddingCategory = true;
+                            });
+                          } else {
+                            setState(() {
+                              _selectedCategory = val;
+                            });
+                          }
+                        },
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Select Category",
+                        ),
+                        validator: (val) =>
+                            val == null ? "Select a category" : null,
                       ),
-                    ),
-                  ],
-                  onChanged: (val) {
-                    if(val == '_add_') {
-                      setState((){
-                        _isAddingCategory = true;
-                      });
-                    } else {
-                      setState((){
-                        _selectedCategory = val;
-                      });
-                    }
-                  },
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Select Category",
-                  ),
-                  validator: (val) => val == null ? "Select a category" : null,
-                ),
               ),
 
               // amount Input
@@ -348,7 +384,6 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-
   Widget _buildInputField({required String label, required Widget child}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 15),
@@ -376,6 +411,4 @@ class _TransactionPageState extends State<TransactionPage> {
       ),
     );
   }
-
 }
-

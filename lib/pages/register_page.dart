@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'home_page.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -17,6 +18,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   Future signUp() async {
     if (!passwordConfirmed()) return;
@@ -50,7 +53,14 @@ class _RegisterPageState extends State<RegisterPage> {
       if (!mounted) return;
 
       Navigator.pop(context);
+/*
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
       return;
+
+ */
 
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -168,7 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
               //pass
               TextField(
                 controller: _passwordController,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.key),
                   hintText: 'Password',
@@ -178,6 +188,16 @@ class _RegisterPageState extends State<RegisterPage> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
               ),
 
@@ -186,7 +206,7 @@ class _RegisterPageState extends State<RegisterPage> {
               //rewrite pass
               TextField(
                 controller: _confirmPasswordController,
-                obscureText: true,
+                obscureText: _obscureConfirmPassword,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.lock_reset),
                   hintText: 'Confirm Password',
@@ -195,6 +215,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
                   ),
                 ),
               ),
