@@ -28,7 +28,20 @@ class FirestoreService {
         .collection('transactions')
         .orderBy('date', descending: true)
         .snapshots()
-        .map((snapshot) =>
-        snapshot.docs.map((doc) => TransactionModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => TransactionModel.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  /// Delete a transaction
+  Future<void> deleteTransaction(String transactionId) async {
+    await _db
+        .collection('users')
+        .doc(userId)
+        .collection('transactions')
+        .doc(transactionId)
+        .delete();
   }
 }

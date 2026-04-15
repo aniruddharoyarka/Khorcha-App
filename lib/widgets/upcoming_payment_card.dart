@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:khorcha/models/transactions.dart';
 
+import '../services/firestore_service.dart';
+
 class UpcomingPaymentCard extends StatelessWidget {
   final TransactionModel payment;
 
@@ -9,7 +11,7 @@ class UpcomingPaymentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showTransactionDetails(context, payment),
+        onTap: () => _showTransactionDetails(context, payment),
         child: Container(
           width: 180,
           margin:  EdgeInsets.only(right: 10),
@@ -20,12 +22,12 @@ class UpcomingPaymentCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-               CircleAvatar(
+              CircleAvatar(
                 radius: 22,
                 backgroundColor: Colors.white,
                 child: Icon(Icons.calendar_month, color: Color(0xFF03624C), size: 25),
               ),
-               SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,8 +145,8 @@ void _showTransactionDetails(BuildContext context, TransactionModel tx) {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  //delete logic
+                onPressed: () async {
+                  await FirestoreService().deleteTransaction(tx.id);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Transaction deleted"), backgroundColor: Colors.red),

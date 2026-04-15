@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:khorcha/models/transactions.dart';
+import 'package:khorcha/services/firestore_service.dart';
 
 class RecentTransactionsCard extends StatelessWidget {
   final TransactionModel transaction;
@@ -98,8 +99,8 @@ void _showTransactionDetails(BuildContext context, TransactionModel tx) {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  print("Deleting transaction: ${tx.id}");
+                onPressed: () async {
+                  await FirestoreService().deleteTransaction(tx.id);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Transaction deleted"), backgroundColor: Colors.red),

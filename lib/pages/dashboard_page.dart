@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:khorcha/pages/profile_page.dart';
-import 'package:khorcha/pages/statistics_page.dart';
 import 'package:khorcha/pages/upcoming_payments_page.dart';
 import 'package:khorcha/widgets/balance_card.dart';
 import 'package:khorcha/widgets/budget_card.dart';
@@ -62,6 +61,8 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -70,7 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final List<TransactionModel> upcomingPayments =
     widget.allTransactions.where((tx) => tx.isSubscription).toList();
 
-    double totalExpense = 0.0;
+    double totalExpense = 0.00;
     for (var tx in widget.allTransactions) {
       if (tx.type == TransactionType.expense) {
         totalExpense += tx.amount;
@@ -81,7 +82,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: ListView(
         physics: AlwaysScrollableScrollPhysics(),
         children: [
-          SizedBox(height: 10),
+          //SizedBox(height: 10),
 
           DashboardHeader(
             name: user?.displayName ?? "User",
@@ -134,7 +135,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
 
           SectionTitle(
-            title: "Upcoming payments",
+            title: "Subscription Payments",
             onSeeAll: () {
               Navigator.push(
                 context,
@@ -150,7 +151,7 @@ class _DashboardPageState extends State<DashboardPage> {
           SizedBox(height: 10),
 
           upcomingPayments.isEmpty
-              ? _buildEmptyState("No upcoming payments found")
+              ? _buildEmptyState("No Subscription Payments found")
               : SizedBox(
             height: 95,
             child: ListView.builder(

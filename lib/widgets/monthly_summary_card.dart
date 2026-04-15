@@ -12,6 +12,17 @@ class MonthlySummaryCard extends StatefulWidget {
 }
 
 class _MonthlySummaryCardState extends State<MonthlySummaryCard>{
+
+  @override
+  void didUpdateWidget(MonthlySummaryCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Recalculate if the month or the underlying transaction list changes
+    if (widget.currentMonth != oldWidget.currentMonth ||
+        widget.transactions != oldWidget.transactions) {
+      _calculateMonthData();
+    }
+  }
+
   double income = 0;
   double expense = 0;
 

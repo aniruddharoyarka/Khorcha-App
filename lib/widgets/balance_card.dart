@@ -19,34 +19,42 @@ class _BalanceCardState extends State<BalanceCard> {
         height: 120,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
+          color: Color(0xFF03624C),
+          /*
           gradient: LinearGradient(
-            colors: [Color(0x78F5FFFC), Color(0x7700987B)],
+            colors: [Color(0x78F5FFFC), Color(0xFF03624C)],
           ),
+
+           */
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Total Expense", style: TextStyle(fontSize: 15)),
+                  Text("Total Expense", style: TextStyle(fontSize: 15,color: Colors.white)),
                   Text(
-                    "৳${widget.totalExpense.toStringAsFixed(2)}",
-                    style: const TextStyle(
+                    "৳${widget.totalExpense.toStringAsFixed(0)}",
+                    style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
+              /*
               ElevatedButton(
                 onPressed: widget.onAddPressed,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.white, shape: const CircleBorder(), padding: const EdgeInsets.all(10)),
                 child: Icon(Icons.add, size: 30, color: Color(0xFF03624C)),
               ),
+              \
+               */
             ],
           ),
         ),
